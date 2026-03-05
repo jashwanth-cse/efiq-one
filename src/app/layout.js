@@ -2,6 +2,7 @@ import { Inter, Orbitron } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CustomCursor from "@/components/CustomCursor";
 
 /* ── Fonts — loaded once, zero layout shift ── */
 const inter = Inter({
@@ -24,7 +25,8 @@ export const metadata = {
     default: "EFIQ One",
     template: "%s | EFIQ One",
   },
-  description: "EFIQ One — a unified ecosystem for attendance and inventory management.",
+  description:
+    "EFIQ One — a unified ecosystem for attendance and inventory management.",
   keywords: ["EFIQ", "attendance", "inventory", "enterprise"],
   viewport: { width: "device-width", initialScale: 1 },
 };
@@ -52,9 +54,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="min-h-screen bg-background text-gray-900 font-display antialiased">
+        <CustomCursor />
         <Navbar />
         <main className="flex-1 w-full">{children}</main>
-        <Footer />
       </body>
     </html>
   );

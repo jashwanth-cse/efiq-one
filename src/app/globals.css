@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
 @import "tailwindcss";
 
 /* ──────────────────────────────────────────
@@ -11,6 +12,11 @@
   --color-nav-gray-dark: #1e293b;
   --font-display: var(--font-inter), sans-serif;
   --font-accent: var(--font-orbitron), sans-serif;
+  /* Brand colors from efiq-one-products */
+  --color-brand-green: #82e05a;
+  --color-brand-blue: #5a78ff;
+  --font-orbitron: var(--font-orbitron), sans-serif;
+  --font-manrope: "Manrope", sans-serif;
 }
 
 /* ──────────────────────────────────────────
@@ -32,10 +38,98 @@ body {
 }
 
 /* ──────────────────────────────────────────
+   Custom Cursor
+────────────────────────────────────────── */
+
+/* Hide the native cursor site-wide */
+*,
+*::before,
+*::after {
+  cursor: none !important;
+}
+
+#efiq-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  /* Centre on the pointer coordinate */
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  /* Dual logo colors: brand-green + brand-blue */
+  background: conic-gradient(from 45deg, #82e05a 0%, #5a78ff 50%, #82e05a 100%);
+  box-shadow:
+    0 0 6px 2px #82e05a,
+    0 0 12px 4px #5a78ff,
+    0 0 24px 8px rgba(130, 224, 90, 0.2);
+  pointer-events: none;
+  z-index: 99999;
+  will-change: transform;
+  transition:
+    width 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    height 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    margin 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+/* Regular interactive elements: dot grows slightly */
+#efiq-cursor.is-hovering {
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  box-shadow:
+    0 0 8px 3px #82e05a,
+    0 0 16px 6px #5a78ff,
+    0 0 32px 10px rgba(130, 224, 90, 0.35);
+}
+
+/* Focus-type cursor on Explore / CTA buttons: transparent ring */
+#efiq-cursor.is-focus {
+  width: 42px;
+  height: 42px;
+  margin: -21px 0 0 -21px;
+  background: transparent;
+  box-shadow:
+    0 0 0 2.5px #5a78ff,
+    0 0 16px 4px rgba(90, 120, 255, 0.6),
+    0 0 32px 8px rgba(90, 120, 255, 0.25),
+    inset 0 0 10px 2px rgba(130, 224, 90, 0.1);
+}
+
+/* ── Particle trail ── */
+.efiq-particle {
+  position: fixed;
+  border-radius: 50%;
+  /* background set per-particle in JS (alternates green / blue) */
+  pointer-events: none;
+  z-index: 99998;
+  animation: efiq-particle-fade 0.65s ease-out forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes efiq-particle-fade {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.1);
+  }
+}
+
+/* ──────────────────────────────────────────
    Material Symbols
 ────────────────────────────────────────── */
 .material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 48;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 300,
+    "GRAD" 0,
+    "opsz" 48;
   font-style: normal;
   font-size: inherit;
   line-height: 1;
@@ -104,4 +198,27 @@ body {
 
 .mobile-menu-animate {
   animation: mobile-menu-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ──────────────────────────────────────────
+   Footer link — underline slide effect
+────────────────────────────────────────── */
+.footer-link {
+  position: relative;
+  transition: color 0.3s;
+}
+
+.footer-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-brand-green);
+  transition: width 0.3s;
+}
+
+.footer-link:hover::after {
+  width: 100%;
 }

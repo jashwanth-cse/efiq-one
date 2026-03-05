@@ -1,200 +1,150 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
-import { NAV_LINKS } from "@/lib/constants";
+import { usePathname } from "next/navigation";
 
-const DROPDOWN_ITEMS = [
-    { label: "My Account", color: "#000000" },
-    { label: "Billing", color: "#000000" },
-    { label: "Sign out", color: "#e7191f" },
+const navItems = [
+  { name: "Home", href: "/" },
+  { name: "Products", href: "/products" },
+  { name: "Enterprise", href: "#enterprise" },
+  { name: "Pricing", href: "#pricing" },
 ];
 
-const NAV_BG = "#d9d9d9";
-
 export default function Navbar() {
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const dropdownRef = useRef(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
 
-    /* Close menus on outside click */
-    useEffect(() => {
-        function onOutside(e) {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-                setDropdownOpen(false);
-                setMobileMenuOpen(false);
-            }
-        }
-        document.addEventListener("mousedown", onOutside);
-        return () => document.removeEventListener("mousedown", onOutside);
-    }, []);
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-zinc-900/95 backdrop-blur-md border-b border-white/5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-20">
+          {/* Logo */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <Link
+              href="/"
+              className="flex items-center gap-2"
+              aria-label="EFiQ ONE Home"
+            >
+              <div className="w-10 h-10 bg-gradient-to-b from-brand-green to-brand-blue rounded-xl flex items-center justify-center text-white font-orbitron font-bold text-xl shadow-sm">
+                U
+              </div>
+              <div className="flex flex-col leading-none">
+                <span className="font-orbitron font-black text-xl tracking-tighter text-white">
+                  EFiQ
+                </span>
+                <span className="font-orbitron text-[10px] tracking-[0.3em] font-bold text-zinc-500">
+                  ONE
+                </span>
+              </div>
+            </Link>
+          </motion.div>
 
-    /* Lock body scroll when mobile menu is open */
-    useEffect(() => {
-        document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
-        return () => { document.body.style.overflow = ""; };
-    }, [mobileMenuOpen]);
+          {/* Desktop Nav */}
+          <nav
+            className="hidden md:flex items-center bg-white/5 px-6 py-2 rounded-full border border-white/10 shadow-sm"
+            aria-label="Main Navigation"
+          >
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <motion.div key={item.name} whileHover={{ y: -2 }}>
+                  <Link
+                    href={item.href}
+                    className={`px-4 py-2 text-sm font-orbitron font-bold transition-colors focus:outline-none ${
+                      isActive
+                        ? "text-brand-green"
+                        : "text-zinc-400 hover:text-brand-green"
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </nav>
 
-    const toggleDropdown = () => {
-        setDropdownOpen(p => !p);
-        if (!dropdownOpen) setMobileMenuOpen(false);
-    };
+          {/* Auth Buttons */}
+          <div className="hidden md:flex items-center gap-4">
+            <motion.button
+              data-magnetic
+              whileHover={{ scale: 1.05 }}
+              className="px-6 py-2 text-sm font-bold font-manrope border-2 border-brand-green text-brand-green rounded-full hover:bg-brand-green hover:text-black transition-all active:scale-95 focus:ring-2 focus:ring-brand-green focus:ring-offset-2 focus:ring-offset-zinc-900"
+            >
+              Sign in
+            </motion.button>
+            <motion.button
+              data-magnetic
+              whileHover={{
+                scale: 1.05,
+                boxShadow: "0 10px 15px -3px rgba(130, 224, 90, 0.4)",
+              }}
+              className="px-6 py-2.5 text-sm font-bold font-manrope bg-brand-green text-black rounded-full transition-all active:scale-95 focus:ring-2 focus:ring-brand-green focus:ring-offset-2 focus:ring-offset-zinc-900"
+            >
+              Contact Sales
+            </motion.button>
+          </div>
 
-    const toggleMobileMenu = () => {
-        setMobileMenuOpen(p => !p);
-        if (!mobileMenuOpen) setDropdownOpen(false);
-    };
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 text-zinc-400 hover:text-brand-green focus:outline-none focus:text-brand-green"
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMenuOpen}
+            >
+              {isMenuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
+        </div>
+      </div>
 
-    return (
-        <header className="w-full px-4 sm:px-6 py-4 sm:py-6 relative z-40">
-            {/* ── Desktop & Mobile Header ── */}
-            <nav className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 items-center relative" ref={dropdownRef}>
-
-                {/* Col 1 — Logo */}
-                <div className="flex items-center">
-                    <Link
-                        href="/"
-                        className="flex items-center gap-2 group"
-                        onClick={() => { setMobileMenuOpen(false); setDropdownOpen(false); }}
-                    >
-                        <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-tr from-primary to-green-400 rounded-lg flex items-center justify-center shadow-md shrink-0">
-                            <span className="text-white font-bold text-lg sm:text-xl select-none">U</span>
-                        </div>
-                        <div className="flex flex-col -space-y-1">
-                            <span className="text-[10px] sm:text-xs font-bold tracking-tighter uppercase text-gray-900">Efiq</span>
-                            <span className="text-base sm:text-lg font-black tracking-tighter uppercase text-gray-900">One</span>
-                        </div>
-                    </Link>
-                </div>
-
-                {/* Col 2 — Center nav (desktop only) */}
-                <div className="hidden md:flex justify-center">
-                    <div
-                        className="flex items-center gap-8 px-12 py-3 rounded-xl shadow-sm"
-                        style={{ backgroundColor: NAV_BG }}
-                    >
-                        {NAV_LINKS.map((link) => (
-                            <Link
-                                key={link.label}
-                                href={link.href}
-                                className="font-accent font-semibold text-gray-800 hover:text-primary transition-colors duration-200 whitespace-nowrap"
-                                style={{ fontSize: "11px" }}
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Col 3 — Right actions */}
-                <div className="flex items-center justify-end gap-1.5 sm:gap-3">
-
-                    {/* Profile dropdown trigger */}
-                    <div className="relative">
-                        <button
-                            aria-label="Profile menu"
-                            aria-expanded={dropdownOpen}
-                            onClick={toggleDropdown}
-                            className="flex items-center justify-center p-1.5 hover:bg-gray-100 rounded-full transition-colors duration-200"
-                        >
-                            <span
-                                className="material-symbols-outlined transition-transform duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]"
-                                style={{
-                                    fontSize: "26px",
-                                    color: "#c0c0c0",
-                                    transform: dropdownOpen ? "scale(1.15) translateY(1px)" : "scale(1)",
-                                }}
-                            >
-                                account_circle
-                            </span>
-                        </button>
-                    </div>
-
-                    {/* Contact Sales — hidden on mobile */}
-                    <button
-                        className="hidden md:block font-accent font-bold text-gray-800 hover:brightness-95 transition-all duration-200 px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl whitespace-nowrap"
-                        style={{ backgroundColor: NAV_BG, fontSize: "11px" }}
-                    >
-                        Contact Sales
-                    </button>
-
-                    {/* Hamburger — mobile only */}
-                    <button
-                        aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-                        className="md:hidden flex items-center justify-center p-2 rounded-xl transition-colors duration-200 ml-1"
-                        style={{ backgroundColor: NAV_BG }}
-                        onClick={toggleMobileMenu}
-                    >
-                        <span
-                            className="material-symbols-outlined text-gray-700 transition-transform duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]"
-                            style={{
-                                fontSize: "22px",
-                                transform: mobileMenuOpen ? "scale(1.1) rotate(90deg)" : "scale(1) rotate(0deg)"
-                            }}
-                        >
-                            {mobileMenuOpen ? "close" : "menu"}
-                        </span>
-                    </button>
-
-                    {/*  ── OVERLAYS (Both Profile & Mobile Menu dropdowns share this space) ──  */}
-
-                    {/* 1) Profile Dropdown */}
-                    {dropdownOpen && (
-                        <div
-                            className="dropdown-animate absolute right-0 top-[calc(100%+0.5rem)] flex flex-col gap-1 p-2 rounded-xl shadow-lg z-50 min-w-[160px]"
-                            style={{ backgroundColor: NAV_BG }}
-                        >
-                            {DROPDOWN_ITEMS.map((item) => (
-                                <button
-                                    key={item.label}
-                                    className="w-full text-left px-4 py-2 rounded-xl hover:brightness-95 active:brightness-90 transition-all duration-150 font-medium"
-                                    style={{
-                                        fontFamily: "Arial, sans-serif",
-                                        fontSize: "13px",
-                                        color: item.color,
-                                        backgroundColor: NAV_BG,
-                                    }}
-                                    onClick={() => setDropdownOpen(false)}
-                                >
-                                    {item.label}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* 2) Mobile Menu Overlay */}
-                    {mobileMenuOpen && (
-                        <div
-                            className="dropdown-animate absolute right-0 top-[calc(100%+0.5rem)] md:hidden w-[220px] rounded-2xl shadow-lg overflow-hidden z-50"
-                            style={{ backgroundColor: NAV_BG }}
-                        >
-                            <div className="flex flex-col p-3 gap-1">
-                                {NAV_LINKS.map((link) => (
-                                    <Link
-                                        key={link.label}
-                                        href={link.href}
-                                        className="font-accent font-semibold text-gray-800 hover:text-primary px-4 py-3 rounded-xl hover:bg-gray-200 active:bg-gray-300 transition-all duration-150"
-                                        style={{ fontSize: "14px" }}
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        {link.label}
-                                    </Link>
-                                ))}
-                                <div className="mt-1 pt-2 border-t border-gray-300">
-                                    <button
-                                        className="w-full font-accent font-bold text-gray-800 px-4 py-3 rounded-xl hover:bg-gray-200 active:bg-gray-300 transition-all duration-150 text-left"
-                                        style={{ fontSize: "14px" }}
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        Contact Sales
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                </div>
-            </nav>
-        </header>
-    );
+      {/* Mobile Nav */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-zinc-900 border-b border-white/5 overflow-hidden"
+            role="navigation"
+            aria-label="Mobile Navigation"
+          >
+            <div className="px-4 pt-2 pb-6 space-y-1">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`block px-3 py-4 text-base font-orbitron font-bold transition-colors ${
+                      isActive
+                        ? "text-brand-green"
+                        : "text-zinc-400 hover:text-brand-green focus:text-brand-green"
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
+              <div className="pt-4 flex flex-col gap-3">
+                <button className="w-full py-3 text-center font-bold font-manrope border-2 border-brand-green text-brand-green rounded-xl focus:ring-2 focus:ring-brand-green">
+                  Sign in
+                </button>
+                <button className="w-full py-3 text-center font-bold font-manrope bg-brand-green text-black rounded-xl focus:ring-2 focus:ring-brand-green">
+                  Contact Sales
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
 }

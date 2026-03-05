@@ -1,0 +1,239 @@
+/* ─────────────────────────────────────────
+   Reset & Base
+───────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Hide the native cursor everywhere */
+html,
+body,
+a,
+button,
+[data-magnetic] {
+  cursor: none !important;
+}
+
+body {
+  background-color: #0f0f0f;
+  color: #e0e0e0;
+  font-family:
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* Smooth scroll so page jumps don't jar the cursor */
+  scroll-behavior: smooth;
+}
+
+/* ─────────────────────────────────────────
+   Custom Cursor
+───────────────────────────────────────── */
+#cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* Centre the dot on the actual pointer coordinate */
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: #6cff6c;
+  box-shadow:
+    0 0 6px 2px #6cff6c,
+    0 0 16px 4px #3ddc3d,
+    0 0 32px 8px rgba(108, 255, 108, 0.3);
+
+  pointer-events: none; /* never blocks clicks */
+  z-index: 99999;
+  will-change: transform;
+
+  /* Scale transition for hover state */
+  transition:
+    transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.18s ease;
+}
+
+/* Enlarged cursor when over interactive elements */
+#cursor.is-hovering {
+  transform: scale(2);
+  box-shadow:
+    0 0 10px 4px #6cff6c,
+    0 0 28px 8px #3ddc3d,
+    0 0 55px 16px rgba(108, 255, 108, 0.45);
+}
+
+/* ─────────────────────────────────────────
+   Particle Trail
+───────────────────────────────────────── */
+.particle {
+  position: fixed;
+  border-radius: 50%;
+  background: #6cff6c;
+  pointer-events: none;
+  z-index: 99998;
+  /* JS sets width/height/top/left */
+  animation: particle-fade 0.6s ease-out forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes particle-fade {
+  0% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.1);
+  }
+}
+
+/* ─────────────────────────────────────────
+   Layout
+───────────────────────────────────────── */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 10vh 2rem 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+}
+
+/* ─────────────────────────────────────────
+   Hero Text
+───────────────────────────────────────── */
+.hero-title {
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: #ffffff;
+  /* Subtle green glow on the title */
+  text-shadow: 0 0 40px rgba(108, 255, 108, 0.2);
+}
+
+.hero-sub {
+  font-size: 1.05rem;
+  color: #888;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+/* ─────────────────────────────────────────
+   Buttons
+───────────────────────────────────────── */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.magnetic-btn {
+  /* Base appearance */
+  padding: 0.75rem 2rem;
+  border-radius: 999px;
+  border: 2px solid #6cff6c;
+  background: transparent;
+  color: #6cff6c;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  /* Smooth return after magnetic pull */
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
+}
+
+.magnetic-btn.accent {
+  background: #6cff6c;
+  color: #0f0f0f;
+}
+
+.magnetic-btn.outline {
+  border-color: #444;
+  color: #aaa;
+}
+
+.magnetic-btn:hover {
+  box-shadow: 0 0 20px rgba(108, 255, 108, 0.4);
+}
+
+.magnetic-btn.accent:hover {
+  background: #8fff8f;
+  border-color: #8fff8f;
+}
+
+/* ─────────────────────────────────────────
+   Cards
+───────────────────────────────────────── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.card {
+  background: #161616;
+  border: 1px solid #252525;
+  border-radius: 1.25rem;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  /* Smooth magnetic & hover return */
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.card:hover {
+  border-color: rgba(108, 255, 108, 0.3);
+  box-shadow: 0 0 30px rgba(108, 255, 108, 0.08);
+}
+
+.card-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.card p {
+  font-size: 0.9rem;
+  color: #777;
+  line-height: 1.6;
+}
+
+/* ─────────────────────────────────────────
+   Demo Link
+───────────────────────────────────────── */
+.demo-link {
+  color: #6cff6c;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.demo-link:hover {
+  border-color: #6cff6c;
+}

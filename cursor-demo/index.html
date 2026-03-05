@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Custom Cursor System</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Custom cursor element -->
+    <div id="cursor"></div>
+
+    <!-- Demo UI -->
+    <main class="container">
+      <h1 class="hero-title">Custom Cursor System</h1>
+      <p class="hero-sub">Move your mouse around. Hover the buttons below.</p>
+
+      <div class="button-group">
+        <button class="magnetic-btn" data-magnetic>Hover Me</button>
+        <button class="magnetic-btn accent" data-magnetic>Get Started</button>
+        <button class="magnetic-btn outline" data-magnetic>Learn More</button>
+      </div>
+
+      <div class="card-grid">
+        <div class="card" data-magnetic>
+          <div class="card-icon">⚡</div>
+          <h3>Fast</h3>
+          <p>
+            Buttery-smooth 60 fps cursor animations with requestAnimationFrame.
+          </p>
+        </div>
+        <div class="card" data-magnetic>
+          <div class="card-icon">✦</div>
+          <h3>Magnetic</h3>
+          <p>Interactive elements pull the cursor toward them on hover.</p>
+        </div>
+        <div class="card" data-magnetic>
+          <div class="card-icon">◎</div>
+          <h3>Particles</h3>
+          <p>Glowing particle trail follows every movement of the mouse.</p>
+        </div>
+      </div>
+
+      <a href="#" class="demo-link">This is a link — hover it too →</a>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
