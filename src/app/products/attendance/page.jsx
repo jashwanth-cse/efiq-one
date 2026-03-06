@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  Package,
+  Clock,
   ArrowLeft,
   ChevronDown,
   ChevronUp,
-  Clock,
+  Package,
 } from "lucide-react";
 import Link from "next/link";
 import Footer from "@/components/Footer";
@@ -15,65 +15,51 @@ import Footer from "@/components/Footer";
 /* ── Feature list ── */
 const features = [
   {
-    id: "add-update",
-    label: "Add / Update / Remove Items Easily",
-    description:
-      "Instantly add new items, update quantities, or remove discontinued stock from your inventory in just a few clicks.",
+    id: "checkin",
+    label: "Real-Time Check-In / Check-Out",
   },
   {
-    id: "movement-history",
-    label: "Stock Movement History",
-    description:
-      "Every stock-in and stock-out is logged with timestamps so you always have a complete audit trail.",
+    id: "workhours",
+    label: "Automatic Work Hour Calculation",
   },
   {
-    id: "low-stock",
-    label: "Low Stock Alerts",
-    description:
-      "Get notified automatically when items fall below your defined threshold so you never run out of critical stock.",
+    id: "leave",
+    label: "Leave & Permission Management",
   },
   {
-    id: "supplier",
-    label: "Supplier & Purchase Records",
-    description:
-      "Link every purchase to a supplier, record pricing history, and track delivery timelines in one place.",
+    id: "insights",
+    label: "Attendance Insights",
   },
   {
-    id: "search",
-    label: "Fast Search & Filtering",
-    description:
-      "Filter by category, location, status, or supplier and find any item across thousands of records instantly.",
+    id: "reports",
+    label: "Exportable Reports",
   },
 ];
 
 /* ── FAQ data ── */
 const faqs = [
   {
-    q: "Can I track unlimited items?",
-    a: "Yes, all plans allow unlimited item entries.",
+    q: "Can my employees use mobile to mark attendance?",
+    a: "Yes – both mobile and web access are supported.",
   },
   {
-    q: "Does it show stock alerts?",
-    a: "Yes – low-stock alerts help prevent shortages.",
+    q: "Is attendance unlimited?",
+    a: "Yes, all check-ins and logs are stored without limits.",
   },
   {
-    q: "Can I track item history?",
-    a: "Absolutely. Every movement is logged.",
-  },
-  {
-    q: "Does it support multiple admins?",
-    a: "Yes, based on your plan, you can assign roles and permissions.",
+    q: "Can I export data for payroll?",
+    a: "Absolutely – one-click Excel and PDF export.",
   },
 ];
 
 /* ── Screenshot placeholder component ── */
 function ScreenshotPlaceholder({ featureId }) {
   const labels = {
-    "add-update": "Add / Update / Remove Items",
-    "movement-history": "Stock Movement History",
-    "low-stock": "Low Stock Alerts",
-    supplier: "Supplier & Purchase Records",
-    search: "Fast Search & Filtering",
+    checkin: "Real-Time Check-In / Check-Out",
+    workhours: "Automatic Work Hour Calculation",
+    leave: "Leave & Permission Management",
+    insights: "Attendance Insights",
+    reports: "Exportable Reports",
   };
 
   return (
@@ -135,7 +121,7 @@ function FaqItem({ faq, index }) {
 }
 
 /* ── Main Page ── */
-export default function InventoryPage() {
+export default function AttendancePage() {
   const [activeFeature, setActiveFeature] = useState(null);
 
   return (
@@ -164,9 +150,9 @@ export default function InventoryPage() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-brand-blue/10 border border-brand-blue/30 rounded-full"
         >
-          <Package size={15} className="text-brand-blue" />
+          <Clock size={15} className="text-brand-blue" />
           <span className="text-xs font-orbitron font-bold text-brand-blue tracking-widest uppercase">
-            Inventory
+            Attendance
           </span>
         </motion.div>
 
@@ -176,8 +162,8 @@ export default function InventoryPage() {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
           className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight font-orbitron mb-6 max-w-3xl mx-auto leading-tight"
         >
-          Smart Inventory Control{" "}
-          <span className="text-brand-blue">for Seamless Operations</span>
+          Smart Attendance Tracking{" "}
+          <span className="text-brand-blue">for Modern Teams</span>
         </motion.h1>
 
         <motion.p
@@ -186,8 +172,8 @@ export default function InventoryPage() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="text-zinc-500 text-base font-manrope max-w-xl mx-auto mb-10 leading-relaxed"
         >
-          Real-time visibility, effortless tracking, and complete clarity over
-          your resources. All in one powerful platform.
+          Accurate, automated, and effortless. Manage your workforce with
+          complete clarity in one powerful platform.
         </motion.p>
 
         <motion.div
@@ -230,7 +216,7 @@ export default function InventoryPage() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="text-3xl sm:text-4xl font-bold tracking-tight font-orbitron mb-6"
         >
-          Everything you need to manage stock effortlessly.
+          Everything you need to track attendance without the manual work.
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
@@ -239,8 +225,9 @@ export default function InventoryPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-zinc-500 text-base font-manrope max-w-2xl mx-auto leading-relaxed"
         >
-          EFIQ One Inventory replaces manual tracking, scattered spreadsheets,
-          and inconsistent stock records with an intelligent, centralized system
+          EFIQ One Attendance replaces outdated registers, spreadsheets, and
+          scattered tracking methods with a clean, intelligent system built for
+          daily operations.
         </motion.p>
       </section>
 
@@ -263,7 +250,7 @@ export default function InventoryPage() {
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="text-xl sm:text-2xl font-bold font-orbitron mb-8 leading-snug"
             >
-              Built for smarter, faster inventory tracking.
+              Built for accurate, effortless attendance.
             </motion.h3>
 
             <ul className="space-y-3">
@@ -315,8 +302,8 @@ export default function InventoryPage() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="text-3xl sm:text-4xl font-bold tracking-tight font-orbitron mb-10"
         >
-          Prevent shortages. Reduce waste.{" "}
-          <span className="block">Improve decision-making.</span>
+          Make attendance simple, smart,{" "}
+          <span className="block">and stress-free.</span>
         </motion.h2>
 
         <motion.div
@@ -369,7 +356,7 @@ export default function InventoryPage() {
         </motion.h2>
 
         <div className="flex flex-col sm:flex-row justify-center items-start gap-8">
-          {/* Attendance card — links to attendance page */}
+          {/* Stock Inventory card — links to inventory page */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -378,14 +365,14 @@ export default function InventoryPage() {
             className="flex flex-col items-center gap-3"
           >
             <Link
-              href="/products/attendance"
+              href="/products/inventory"
               className="w-16 h-16 rounded-2xl bg-brand-blue flex items-center justify-center shadow-lg hover:opacity-80 transition-opacity duration-300"
-              aria-label="Go to Attendance"
+              aria-label="Go to Stock Inventory"
             >
-              <Clock className="w-8 h-8 text-white" />
+              <Package className="w-8 h-8 text-white" />
             </Link>
             <span className="text-sm font-manrope font-medium text-zinc-700">
-              Attendance
+              Stock Inventory
             </span>
           </motion.div>
 

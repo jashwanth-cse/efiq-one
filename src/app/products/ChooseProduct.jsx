@@ -11,7 +11,7 @@ const products = [
     description:
       "Always know what's in stock, what's running low, and what needs action. Real-time tracking for modern businesses.",
     icon: Package,
-    href: "#",
+    href: "/products/inventory",
   },
   {
     id: "attendance-tracking",
@@ -19,7 +19,7 @@ const products = [
     description:
       "Track every check-in, work hour, and leave with complete accuracy and zero manual effort. Automated workforce management.",
     icon: Clock,
-    href: "#",
+    href: "/products/attendance",
   },
 ];
 
