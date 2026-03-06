@@ -11,6 +11,7 @@ const navItems = [
   { name: "Resources", href: "#resources" },
   { name: "Enterprise", href: "#enterprise" },
   { name: "Pricing", href: "#pricing" },
+ // { name: "Billing", href: "/billing" },
 ];
 
 export default function Navbar() {
@@ -56,11 +57,10 @@ export default function Navbar() {
                 <motion.div key={item.name} whileHover={{ y: -2 }}>
                   <Link
                     href={item.href}
-                    className={`px-4 py-2 text-sm font-orbitron font-bold transition-colors focus:outline-none ${
-                      isActive
+                    className={`px-4 py-2 text-sm font-orbitron font-bold transition-colors focus:outline-none ${isActive
                         ? "text-brand-green"
                         : "text-zinc-400 hover:text-brand-green"
-                    }`}
+                      }`}
                   >
                     {item.name}
                   </Link>
@@ -123,11 +123,10 @@ export default function Navbar() {
                     key={item.name}
                     href={item.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`block px-3 py-4 text-base font-orbitron font-bold transition-colors ${
-                      isActive
+                    className={`block px-3 py-4 text-base font-orbitron font-bold transition-colors ${isActive
                         ? "text-brand-green"
                         : "text-zinc-400 hover:text-brand-green focus:text-brand-green"
-                    }`}
+                      }`}
                   >
                     {item.name}
                   </Link>
