@@ -53,9 +53,9 @@ export default function Footer() {
                   role="listitem"
                   aria-label={`Follow us on ${social.name}`}
                   initial={{
-                    color: "#a1a1aa",
-                    backgroundColor: "rgba(255, 255, 255, 0.05)",
-                    borderColor: "rgba(255, 255, 255, 0.1)",
+                    color: social.color,
+                    backgroundColor: `${social.color}15`,
+                    borderColor: `${social.color}50`,
                   }}
                   whileHover={{
                     color: social.color,
