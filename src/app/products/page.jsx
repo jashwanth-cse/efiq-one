@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function ProductsPage() {
   return (
-    <div className="min-h-screen bg-white selection:bg-brand-green selection:text-black">
+    <div className="min-h-screen bg-white selection:bg-brand-blue selection:text-white">
       <ChooseProduct />
     </div>
   );

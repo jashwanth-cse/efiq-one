@@ -11,7 +11,7 @@ const navItems = [
   { name: "Resources", href: "#resources" },
   { name: "Enterprise", href: "#enterprise" },
   { name: "Pricing", href: "#pricing" },
- // { name: "Billing", href: "/billing" },
+  // { name: "Billing", href: "/billing" },
 ];
 
 export default function Navbar() {
@@ -57,10 +57,11 @@ export default function Navbar() {
                 <motion.div key={item.name} whileHover={{ y: -2 }}>
                   <Link
                     href={item.href}
-                    className={`px-4 py-2 text-sm font-orbitron font-bold transition-colors focus:outline-none ${isActive
-                        ? "text-brand-green"
-                        : "text-zinc-400 hover:text-brand-green"
-                      }`}
+                    className={`px-4 py-2 text-sm font-orbitron font-bold transition-colors focus:outline-none ${
+                      isActive
+                        ? "text-brand-blue"
+                        : "text-zinc-400 hover:text-brand-blue"
+                    }`}
                   >
                     {item.name}
                   </Link>
@@ -94,7 +95,7 @@ export default function Navbar() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-zinc-400 hover:text-brand-green focus:outline-none focus:text-brand-green"
+              className="p-2 text-zinc-400 hover:text-brand-blue focus:outline-none focus:text-brand-blue"
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMenuOpen}
             >
@@ -123,10 +124,11 @@ export default function Navbar() {
                     key={item.name}
                     href={item.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`block px-3 py-4 text-base font-orbitron font-bold transition-colors ${isActive
-                        ? "text-brand-green"
-                        : "text-zinc-400 hover:text-brand-green focus:text-brand-green"
-                      }`}
+                    className={`block px-3 py-4 text-base font-orbitron font-bold transition-colors ${
+                      isActive
+                        ? "text-brand-blue"
+                        : "text-zinc-400 hover:text-brand-blue focus:text-brand-blue"
+                    }`}
                   >
                     {item.name}
                   </Link>

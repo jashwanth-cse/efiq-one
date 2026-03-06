@@ -66,7 +66,7 @@ function HoverCard({ product }) {
           transition: { duration: 0.6, ease: "easeOut" },
         },
       }}
-      className="relative group bg-white border border-black/10 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:border-brand-green/30 transition-shadow duration-500 flex flex-col h-full"
+      className="relative group bg-white border border-black/10 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:border-brand-blue/30 transition-shadow duration-500 flex flex-col h-full"
       whileHover={{ y: -12 }}
     >
       <motion.div
@@ -77,11 +77,11 @@ function HoverCard({ product }) {
         <div className="flex items-center gap-4 mb-6">
           <motion.div
             whileHover={{ rotate: 12, scale: 1.1 }}
-            className="p-3 bg-zinc-100 rounded-2xl text-zinc-900 group-hover:bg-brand-green group-hover:text-black transition-colors duration-500"
+            className="p-3 bg-zinc-100 rounded-2xl text-zinc-900 group-hover:bg-brand-blue group-hover:text-white transition-colors duration-500"
           >
             <Icon className="w-8 h-8" />
           </motion.div>
-          <h3 className="text-2xl font-bold tracking-tight group-hover:text-brand-green transition-colors duration-500 font-orbitron">
+          <h3 className="text-2xl font-bold tracking-tight group-hover:text-brand-blue transition-colors duration-500 font-orbitron">
             {product.title}
           </h3>
         </div>
@@ -133,7 +133,7 @@ export default function ChooseProduct() {
           initial={{ width: 0 }}
           animate={{ width: 96 }}
           transition={{ delay: 0.4, duration: 1 }}
-          className="h-1.5 bg-brand-green mx-auto rounded-full"
+          className="h-1.5 bg-brand-blue mx-auto rounded-full"
         />
         <motion.p
           initial={{ opacity: 0, y: 10 }}

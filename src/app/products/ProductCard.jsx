@@ -45,7 +45,7 @@ export default function ProductCard({
           transition: { duration: 0.6, ease: "easeOut" },
         },
       }}
-      className="relative group bg-white border border-black/10 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:border-brand-green/30 transition-all duration-500 flex flex-col h-full"
+      className="relative group bg-white border border-black/10 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:border-brand-blue/30 transition-all duration-500 flex flex-col h-full"
       whileHover={{ y: -12 }}
       onClick={handleClick}
     >
@@ -63,7 +63,7 @@ export default function ProductCard({
             fill
             className="object-cover rounded-3xl opacity-80"
           />
-          <span className="relative z-10 font-orbitron font-black text-brand-green text-2xl tracking-widest drop-shadow-lg">
+          <span className="relative z-10 font-orbitron font-black text-brand-blue text-2xl tracking-widest drop-shadow-lg">
             COMING SOON
           </span>
         </div>
@@ -91,12 +91,12 @@ export default function ProductCard({
           {icon && (
             <motion.div
               whileHover={{ rotate: 12, scale: 1.1 }}
-              className="p-3 bg-zinc-100 rounded-2xl text-zinc-900 group-hover:bg-brand-green group-hover:text-black transition-colors duration-500"
+              className="p-3 bg-zinc-100 rounded-2xl text-zinc-900 group-hover:bg-brand-blue group-hover:text-white transition-colors duration-500"
             >
               {icon}
             </motion.div>
           )}
-          <h3 className="text-2xl font-bold tracking-tight group-hover:text-brand-green transition-colors duration-500">
+          <h3 className="text-2xl font-bold tracking-tight group-hover:text-brand-blue transition-colors duration-500">
             {title}
           </h3>
         </div>
