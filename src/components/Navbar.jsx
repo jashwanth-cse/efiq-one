@@ -7,8 +7,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { name: "Home", href: "/" },
   { name: "Products", href: "/products" },
+  { name: "Resources", href: "#resources" },
   { name: "Enterprise", href: "#enterprise" },
   { name: "Pricing", href: "#pricing" },
 ];
