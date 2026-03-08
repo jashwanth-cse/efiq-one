@@ -6,20 +6,20 @@ import { Package, Clock } from "lucide-react";
 
 const products = [
   {
-    id: "stock-inventory",
+    id: "inventory",
     title: "Stock Inventory",
     description:
       "Always know what's in stock, what's running low, and what needs action. Real-time tracking for modern businesses.",
     icon: Package,
-    href: "/products/inventory",
+    href: "/products/inventory/pricing",
   },
   {
-    id: "attendance-tracking",
-    title: "Attendance Tracking",
+    id: "attendance",
+    title: "Attendance",
     description:
       "Track every check-in, work hour, and leave with complete accuracy and zero manual effort. Automated workforce management.",
     icon: Clock,
-    href: "/products/attendance",
+    href: "/products/attendance/pricing",
   },
 ];
 
@@ -92,15 +92,12 @@ function HoverCard({ product }) {
 
         <div className="flex justify-start">
           <motion.a
-            data-magnetic
-            data-cursor-focus
             href={product.href}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="inline-flex items-center gap-2 px-6 py-3 font-orbitron font-bold text-black border-2 border-black bg-brand-green rounded-full hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-300 focus:ring-2 focus:ring-brand-green focus:ring-offset-2"
-            aria-label={`Explore more about ${product.title}`}
           >
-            Explore More
+            Yes Interested
             <motion.span
               className="inline-block"
               initial={{ x: 0 }}
@@ -116,10 +113,9 @@ function HoverCard({ product }) {
   );
 }
 
-export default function ChooseProduct() {
+export default function PricingPage() {
   return (
     <section className="min-h-[calc(100vh-5rem)] mt-20 flex flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Section Header */}
       <div className="text-center mb-16">
         <motion.h1
           initial={{ opacity: 0, scale: 0.9 }}
@@ -127,7 +123,7 @@ export default function ChooseProduct() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-4 font-orbitron"
         >
-          Products
+          Pricing
         </motion.h1>
         <motion.div
           initial={{ width: 0 }}
@@ -141,12 +137,10 @@ export default function ChooseProduct() {
           transition={{ delay: 0.6, duration: 0.6 }}
           className="mt-6 text-zinc-500 text-base font-display max-w-xl mx-auto"
         >
-          Choose the solution that fits your business. Hover to preview what's
-          coming.
+          Choose the plan that fits your business. Click to explore pricing.
         </motion.p>
       </div>
 
-      {/* Product Grid */}
       <motion.div
         className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12"
         initial="hidden"

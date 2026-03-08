@@ -16,7 +16,7 @@ export default function Footer() {
   return (
     <footer className="relative bg-zinc-900/95 backdrop-blur-md border-t border-white/5 pt-16 pb-8 overflow-hidden">
       {/* Subtle background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-brand-green/5 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-brand-blue/5 pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-16">
@@ -53,9 +53,9 @@ export default function Footer() {
                   role="listitem"
                   aria-label={`Follow us on ${social.name}`}
                   initial={{
-                    color: "#a1a1aa",
-                    backgroundColor: "rgba(255, 255, 255, 0.05)",
-                    borderColor: "rgba(255, 255, 255, 0.1)",
+                    color: social.color,
+                    backgroundColor: `${social.color}15`,
+                    borderColor: `${social.color}50`,
                   }}
                   whileHover={{
                     color: social.color,
@@ -66,7 +66,7 @@ export default function Footer() {
                     boxShadow: `0 10px 20px -5px ${social.color}33`,
                   }}
                   transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                  className="w-10 h-10 rounded-xl border flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-brand-green"
+                  className="w-10 h-10 rounded-xl border flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-brand-blue"
                 >
                   <social.Icon className="w-5 h-5" />
                 </motion.a>
@@ -91,7 +91,7 @@ export default function Footer() {
                   <li key={item}>
                     <a
                       href="#"
-                      className="footer-link hover:text-brand-green transition-colors focus:text-brand-green focus:outline-none"
+                      className="footer-link hover:text-brand-blue transition-colors focus:text-brand-blue focus:outline-none"
                     >
                       {item}
                     </a>
@@ -114,7 +114,7 @@ export default function Footer() {
                   <li key={item}>
                     <a
                       href="#"
-                      className="footer-link hover:text-brand-green transition-colors focus:text-brand-green focus:outline-none"
+                      className="footer-link hover:text-brand-blue transition-colors focus:text-brand-blue focus:outline-none"
                     >
                       {item}
                     </a>
@@ -130,10 +130,10 @@ export default function Footer() {
             © 2025 EFIQONE. ALL RIGHTS RESERVED.
           </p>
           <div className="flex gap-8 font-manrope font-bold text-[10px] tracking-wider text-zinc-500 uppercase">
-            <a href="#" className="hover:text-brand-green transition-colors">
+            <a href="#" className="hover:text-brand-blue transition-colors">
               Privacy Policy
             </a>
-            <a href="#" className="hover:text-brand-green transition-colors">
+            <a href="#" className="hover:text-brand-blue transition-colors">
               Terms of Service
             </a>
           </div>
