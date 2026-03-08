@@ -148,7 +148,7 @@ export default function SignUpPage() {
                             </div>
 
                             <Link
-                                href="/login"
+                                href="/registration/login"
                                 className="w-full py-3.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-full transition-all flex justify-center items-center active:scale-[0.98]"
                             >
                                 Log in
