@@ -1,39 +1,80 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { motion } from "motion/react";
+import { 
+    motion, 
+    useSpring, 
+    useMotionValue, 
+    useTransform, 
+    useVelocity 
+} from "motion/react";
+
+// --- Animation Components ---
+
+// 1. Scramble Text Effect
+const ScrambleText = ({ text }) => {
+    const [display, setDisplay] = useState(text);
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    
+    useEffect(() => {
+        let iteration = 0;
+        const interval = setInterval(() => {
+            setDisplay(text.split("").map((letter, index) => {
+                if (index < iteration) return text[index];
+                return letters[Math.floor(Math.random() * 26)];
+            }).join(""));
+            
+            if (iteration >= text.length) clearInterval(interval);
+            iteration += 1 / 3;
+        }, 30);
+        return () => clearInterval(interval);
+    }, [text]);
+
+    return <span>{display}</span>;
+};
+
+// 2. Background Ticker
+const BackgroundTicker = () => (
+    <div className="absolute inset-0 overflow-hidden opacity-[0.03] pointer-events-none z-0 flex items-center">
+        <motion.div 
+            animate={{ x: [0, -1000] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="text-[15rem] font-black whitespace-nowrap select-none"
+        >
+            EPIQ ONE • SIGN UP • WORKSPACE • EPIQ ONE • SIGN UP • WORKSPACE •
+        </motion.div>
+    </div>
+);
 
 const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
         opacity: 1,
         y: 0,
-        transition: { duration: 0.6, ease: "easeOut" },
+        transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
     },
 };
 
 const formVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
+    hidden: { opacity: 0 },
     visible: {
         opacity: 1,
-        scale: 1,
         transition: {
-            duration: 0.6,
             staggerChildren: 0.1,
-            delayChildren: 0.2,
+            delayChildren: 0.3,
         },
     },
 };
 
 const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
+    hidden: { opacity: 0, x: -10 },
     visible: {
         opacity: 1,
-        y: 0,
-        transition: { duration: 0.4 },
+        x: 0,
+        transition: { duration: 0.5 },
     },
 };
 
@@ -41,21 +82,32 @@ export default function SignUpPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    return (
-        <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-            <Navbar />
+    // --- Interaction Physics ---
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
 
-            {/* Main Content Centered vertically and horizontally */}
-            <main className="flex-1 flex items-center justify-center p-4 pt-24 pb-12">
+    const springConfig = { damping: 20, stiffness: 300 };
+    const dx = useSpring(mouseX, springConfig);
+    const dy = useSpring(mouseY, springConfig);
+
+    return (
+        <div className="min-h-screen bg-gray-50 flex flex-col font-sans relative overflow-hidden">
+            <Navbar />
+            
+            <BackgroundTicker />
+
+            <main className="flex-1 flex items-center justify-center p-4 pt-24 pb-12 relative z-10">
                 <motion.div
                     initial="hidden"
                     animate="visible"
                     variants={containerVariants}
-                    className="w-full max-w-[420px] bg-white rounded-[24px] shadow-sm p-8 border border-gray-200/60"
+                    className="w-full max-w-[420px] bg-white/80 backdrop-blur-xl rounded-[32px] shadow-2xl shadow-gray-200/50 p-8 border border-white"
                 >
                     <motion.div variants={itemVariants} className="text-center mb-8">
-                        <motion.h1 variants={itemVariants} className="text-3xl font-extrabold tracking-tight text-gray-900">Sign up</motion.h1>
-                        <motion.p variants={itemVariants} className="text-sm text-gray-500 mt-2">Create your Epiq One account</motion.p>
+                        <motion.h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
+                            <ScrambleText text="Sign up" />
+                        </motion.h1>
+                        <motion.p className="text-sm text-gray-500 mt-2">Create your Epiq One account</motion.p>
                     </motion.div>
 
                     <motion.form
@@ -70,11 +122,12 @@ export default function SignUpPage() {
                             <label className="text-sm font-semibold text-gray-700 block" htmlFor="name">
                                 Name
                             </label>
-                            <input
+                            <motion.input
+                                whileFocus={{ scale: 1.01, borderColor: "#000" }}
                                 id="name"
                                 type="text"
                                 placeholder="Enter your name"
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-4 focus:ring-brand-green/10 transition-all placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
                             />
                         </motion.div>
 
@@ -83,11 +136,12 @@ export default function SignUpPage() {
                             <label className="text-sm font-semibold text-gray-700 block" htmlFor="email">
                                 Organization mail id
                             </label>
-                            <input
+                            <motion.input
+                                whileFocus={{ scale: 1.01 }}
                                 id="email"
                                 type="email"
                                 placeholder="you@company.com"
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-4 focus:ring-brand-green/10 transition-all placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
                             />
                         </motion.div>
 
@@ -96,11 +150,12 @@ export default function SignUpPage() {
                             <label className="text-sm font-semibold text-gray-700 block" htmlFor="orgName">
                                 Organization Name
                             </label>
-                            <input
+                            <motion.input
+                                whileFocus={{ scale: 1.01 }}
                                 id="orgName"
                                 type="text"
                                 placeholder="Acme Corp"
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-4 focus:ring-brand-green/10 transition-all placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
                             />
                         </motion.div>
 
@@ -110,17 +165,17 @@ export default function SignUpPage() {
                                 Password
                             </label>
                             <div className="relative">
-                                <input
+                                <motion.input
+                                    whileFocus={{ scale: 1.01 }}
                                     id="password"
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Create a password"
-                                    className="w-full px-4 py-3 pr-11 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
+                                    className="w-full px-4 py-3 pr-11 rounded-xl border border-gray-200 focus:outline-none focus:ring-4 focus:ring-brand-green/10 transition-all placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none p-1 rounded-md"
-                                    aria-label={showPassword ? "Hide password" : "Show password"}
                                 >
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
@@ -133,17 +188,17 @@ export default function SignUpPage() {
                                 Re Enter Password
                             </label>
                             <div className="relative">
-                                <input
+                                <motion.input
+                                    whileFocus={{ scale: 1.01 }}
                                     id="confirmPassword"
                                     type={showConfirmPassword ? "text" : "password"}
                                     placeholder="Confirm your password"
-                                    className="w-full px-4 py-3 pr-11 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
+                                    className="w-full px-4 py-3 pr-11 rounded-xl border border-gray-200 focus:outline-none focus:ring-4 focus:ring-brand-green/10 transition-all placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none p-1 rounded-md"
-                                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                                 >
                                     {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
@@ -174,9 +229,13 @@ export default function SignUpPage() {
                         </motion.div>
 
                         <motion.div variants={itemVariants} className="pt-4 space-y-4">
+                            {/* Sign Up Button with Magnetic and Drag effect */}
                             <motion.button
+                                drag
+                                dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                                dragElastic={0.1}
                                 type="submit"
-                                className="w-full py-3.5 px-4 bg-brand-green hover:bg-brand-green/90 text-zinc-900 font-bold rounded-full transition-all focus:ring-2 focus:ring-brand-green focus:ring-offset-2 flex justify-center items-center active:scale-[0.98]"
+                                className="w-full py-4 px-4 bg-brand-green hover:bg-brand-green/90 text-zinc-900 font-extrabold rounded-full transition-shadow hover:shadow-lg hover:shadow-brand-green/20 focus:ring-2 focus:ring-brand-green focus:ring-offset-2 flex justify-center items-center active:scale-[0.98]"
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                             >
@@ -187,18 +246,20 @@ export default function SignUpPage() {
                                 <div className="absolute inset-0 flex items-center">
                                     <div className="w-full border-t border-gray-200"></div>
                                 </div>
-                                <div className="relative bg-white px-4 text-sm font-medium text-gray-400">
+                                <div className="relative bg-white/80 px-4 text-sm font-medium text-gray-400">
                                     or
                                 </div>
                             </div>
 
+                            {/* Log In Button */}
                             <motion.div
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
+                                drag
+                                dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                                dragElastic={0.05}
                             >
                                 <Link
                                     href="/registration/login"
-                                    className="w-full py-3.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-full transition-all flex justify-center items-center active:scale-[0.98] block"
+                                    className="w-full py-4 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-full transition-all flex justify-center items-center block text-center"
                                 >
                                     Log in
                                 </Link>
