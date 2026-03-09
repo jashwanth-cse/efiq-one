@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
 const navItems = [
   { name: "Products", href: "/products" },
   { name: "Resources", href: "#resources" },
-  { name: "Enterprise", href: "#enterprise" },
+  { name: "Enterprise", href: "/enterprise" },
   { name: "Pricing", href: "/pricing" },
   // { name: "Billing", href: "/billing" },
 ];
@@ -72,23 +72,29 @@ export default function Navbar() {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            <motion.button
+            <motion.div
               data-magnetic
               whileHover={{ scale: 1.05 }}
-              className="px-6 py-2 text-sm font-bold font-manrope border-2 border-brand-green text-brand-green rounded-full hover:bg-brand-green hover:text-black transition-all active:scale-95 focus:ring-2 focus:ring-brand-green focus:ring-offset-2 focus:ring-offset-zinc-900"
             >
-              Sign in
-            </motion.button>
-            <motion.button
+              <Link href="/registration/login">
+                <button className="px-6 py-2 text-sm font-bold font-manrope border-2 border-brand-green text-brand-green rounded-full hover:bg-brand-green hover:text-black transition-all active:scale-95 focus:ring-2 focus:ring-brand-green focus:ring-offset-2 focus:ring-offset-zinc-900">
+                  Sign in
+                </button>
+              </Link>
+            </motion.div>
+            <motion.div
               data-magnetic
               whileHover={{
                 scale: 1.05,
                 boxShadow: "0 10px 15px -3px rgba(130, 224, 90, 0.4)",
               }}
-              className="px-6 py-2.5 text-sm font-bold font-manrope bg-brand-green text-black rounded-full transition-all active:scale-95 focus:ring-2 focus:ring-brand-green focus:ring-offset-2 focus:ring-offset-zinc-900"
             >
-              Contact Sales
-            </motion.button>
+              <Link href="/contact-sales">
+                <button className="px-6 py-2.5 text-sm font-bold font-manrope bg-brand-green text-black rounded-full transition-all active:scale-95 focus:ring-2 focus:ring-brand-green focus:ring-offset-2 focus:ring-offset-zinc-900">
+                  Contact Sales
+                </button>
+              </Link>
+            </motion.div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -134,12 +140,16 @@ export default function Navbar() {
                 );
               })}
               <div className="pt-4 flex flex-col gap-3">
-                <button className="w-full py-3 text-center font-bold font-manrope border-2 border-brand-green text-brand-green rounded-xl focus:ring-2 focus:ring-brand-green">
-                  Sign in
-                </button>
-                <button className="w-full py-3 text-center font-bold font-manrope bg-brand-green text-black rounded-xl focus:ring-2 focus:ring-brand-green">
-                  Contact Sales
-                </button>
+                <Link href="/registration/login" onClick={() => setIsMenuOpen(false)}>
+                  <button className="w-full py-3 text-center font-bold font-manrope border-2 border-brand-green text-brand-green rounded-xl focus:ring-2 focus:ring-brand-green">
+                    Sign in
+                  </button>
+                </Link>
+                <Link href="/contact-sales" onClick={() => setIsMenuOpen(false)}>
+                  <button className="w-full py-3 text-center font-bold font-manrope bg-brand-green text-black rounded-xl focus:ring-2 focus:ring-brand-green">
+                    Contact Sales
+                  </button>
+                </Link>
               </div>
             </div>
           </motion.div>
