@@ -29,17 +29,18 @@ export default function Navbar() {
           >
             <Link
               href="/"
-              className="flex items-center gap-2"
+              className="flex items-center gap-3"
               aria-label="EFiQ ONE Home"
             >
-              <div className="w-10 h-10 bg-gradient-to-b from-brand-green to-brand-blue rounded-xl flex items-center justify-center text-white font-orbitron font-bold text-xl shadow-sm">
-                U
-              </div>
-              <div className="flex flex-col leading-none">
-                <span className="font-orbitron font-black text-xl tracking-tighter text-white">
-                  EFiQ
+              <svg viewBox="10 0 80 95" className="h-10 w-auto shrink-0 drop-shadow-md" aria-hidden="true">
+                <path d="M 10 48 L 10 70 A 25 25 0 0 0 35 95 L 65 95 A 25 25 0 0 0 90 70 L 90 48 L 65 48 L 65 70 L 35 70 L 35 48 Z" fill="#5a78ff" />
+                <path d="M 90 48 L 90 25 A 25 25 0 0 0 65 0 L 10 0 L 35 25 L 65 25 L 65 48 Z" fill="#82e05a" />
+              </svg>
+              <div className="flex flex-col justify-center">
+                <span className="font-orbitron font-bold text-[13px] tracking-[0.2em] text-white leading-none mb-0.5" style={{ marginLeft: '1px' }}>
+                  EFIQ
                 </span>
-                <span className="font-orbitron text-[10px] tracking-[0.3em] font-bold text-zinc-500">
+                <span className="font-orbitron font-black text-[28px] text-white leading-none tracking-tight">
                   ONE
                 </span>
               </div>

@@ -270,18 +270,16 @@ export default function AttendancePage() {
                   className="group"
                 >
                   <div
-                    className={`px-4 py-3 rounded-xl transition-all duration-300 ${
-                      activeFeature === feature.id
+                    className={`px-4 py-3 rounded-xl transition-all duration-300 ${activeFeature === feature.id
                         ? "bg-brand-blue/10 border border-brand-blue/40"
                         : "border border-transparent hover:bg-zinc-50"
-                    }`}
+                      }`}
                   >
                     <p
-                      className={`font-manrope text-sm transition-colors duration-300 ${
-                        activeFeature === feature.id
+                      className={`font-manrope text-sm transition-colors duration-300 ${activeFeature === feature.id
                           ? "font-bold text-zinc-900"
                           : "font-medium text-zinc-400 group-hover:text-zinc-700"
-                      }`}
+                        }`}
                     >
                       {feature.label}
                     </p>
@@ -366,7 +364,7 @@ export default function AttendancePage() {
           >
             <Link
               href="/products/inventory"
-              className="w-16 h-16 rounded-2xl bg-brand-blue flex items-center justify-center shadow-lg hover:opacity-80 transition-opacity duration-300"
+              className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-green to-brand-blue flex items-center justify-center shadow-lg hover:opacity-80 transition-opacity duration-300"
               aria-label="Go to Stock Inventory"
             >
               <Package className="w-8 h-8 text-white" />

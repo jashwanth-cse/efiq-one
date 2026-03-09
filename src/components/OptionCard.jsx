@@ -27,7 +27,7 @@ export default function OptionCard({
       aria-label={title}
     >
       {/* Icon box — fluid size */}
-      <div className="w-32 h-32 sm:w-36 sm:h-36 bg-primary rounded-[2rem] flex items-center justify-center shadow-xl shadow-indigo-500/20 transform group-hover:scale-105 active:scale-95 transition-transform duration-300 overflow-hidden">
+      <div className="w-32 h-32 sm:w-36 sm:h-36 bg-gradient-to-br from-brand-green to-brand-blue rounded-[2rem] flex items-center justify-center shadow-xl shadow-brand-blue/20 transform group-hover:scale-105 active:scale-95 transition-transform duration-300 overflow-hidden">
         {imageSrc ? (
           <Image
             src={imageSrc}

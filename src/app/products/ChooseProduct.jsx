@@ -77,11 +77,11 @@ function HoverCard({ product }) {
         <div className="flex items-center gap-4 mb-6">
           <motion.div
             whileHover={{ rotate: 12, scale: 1.1 }}
-            className="p-3 bg-zinc-100 rounded-2xl text-zinc-900 group-hover:bg-brand-blue group-hover:text-white transition-colors duration-500"
+            className="p-3 bg-zinc-100 rounded-2xl text-zinc-900 group-hover:bg-gradient-to-br group-hover:from-brand-green group-hover:to-brand-blue group-hover:text-white transition-all duration-500"
           >
             <Icon className="w-8 h-8" />
           </motion.div>
-          <h3 className="text-2xl font-bold tracking-tight group-hover:text-brand-blue transition-colors duration-500 font-orbitron">
+          <h3 className="text-2xl font-bold tracking-tight text-zinc-900 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-brand-green group-hover:to-brand-blue transition-all duration-500 font-orbitron">
             {product.title}
           </h3>
         </div>
@@ -133,7 +133,7 @@ export default function ChooseProduct() {
           initial={{ width: 0 }}
           animate={{ width: 96 }}
           transition={{ delay: 0.4, duration: 1 }}
-          className="h-1.5 bg-brand-blue mx-auto rounded-full"
+          className="h-1.5 bg-gradient-to-r from-brand-green to-brand-blue mx-auto rounded-full"
         />
         <motion.p
           initial={{ opacity: 0, y: 10 }}
