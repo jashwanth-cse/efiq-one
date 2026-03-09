@@ -1,6 +1,9 @@
+"use client";
+
 import CustomCursor from "@/components/CustomCursor";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { motion } from "motion/react";
 import {
     ArrowRight,
     Settings,
@@ -15,6 +18,39 @@ import {
     Search
 } from "lucide-react";
 
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.2,
+            delayChildren: 0.1,
+        },
+    },
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.6, ease: "easeOut" },
+    },
+};
+
+const buttonVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+        opacity: 1,
+        scale: 1,
+        transition: { duration: 0.5, ease: "easeOut" },
+    },
+    hover: {
+        scale: 1.05,
+        transition: { duration: 0.3 },
+    },
+};
+
 export default function LandingPage() {
     return (
         <main className="min-h-screen flex flex-col bg-white text-zinc-900 font-manrope">
@@ -23,32 +59,65 @@ export default function LandingPage() {
 
             <div className="flex-grow pt-24">
                 {/* SECTION 1 — HERO */}
-                <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center flex flex-col items-center">
-                    <h1 className="text-5xl md:text-7xl font-orbitron font-bold text-zinc-900 tracking-tight max-w-4xl leading-tight">
+                <motion.section
+                    initial="hidden"
+                    animate="visible"
+                    variants={containerVariants}
+                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center flex flex-col items-center"
+                >
+                    <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-orbitron font-bold text-zinc-900 tracking-tight max-w-4xl leading-tight">
                         Your Business. Simplified. Streamlined.
-                    </h1>
-                    <p className="mt-6 text-lg md:text-xl text-zinc-600 max-w-2xl mx-auto leading-relaxed">
+                    </motion.h1>
+                    <motion.p variants={itemVariants} className="mt-6 text-lg md:text-xl text-zinc-600 max-w-2xl mx-auto leading-relaxed">
                         Centralize people, operations, and resources. Automate workflows to drive efficiency and focus on what truly matters for your growth.
-                    </p>
-                    <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="px-8 py-4 bg-brand-green text-black font-bold rounded-full hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-brand-green transition-colors flex items-center gap-2 text-lg">
+                    </motion.p>
+                    <motion.div variants={buttonVariants} className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                        <motion.button
+                            whileHover="hover"
+                            whileTap={{ scale: 0.95 }}
+                            className="px-8 py-4 bg-brand-green text-black font-bold rounded-full hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-brand-green transition-colors flex items-center gap-2 text-lg"
+                        >
                             Get a Demo
                             <ArrowRight className="w-5 h-5" />
-                        </button>
-                    </div>
-                </section>
+                        </motion.button>
+                    </motion.div>
+                </motion.section>
 
                 {/* SECTION 2 — FEATURE ICON AREA */}
-                <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-                    <div className="bg-zinc-100 rounded-3xl p-8 md:p-12 flex justify-center items-center gap-8 md:gap-16 shadow-inner">
-                        <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105">
+                <motion.section
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7 }}
+                    viewport={{ once: true }}
+                    className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-20"
+                >
+                    <motion.div
+                        className="bg-zinc-100 rounded-3xl p-8 md:p-12 flex justify-center items-center gap-8 md:gap-16 shadow-inner"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.6 }}
+                        viewport={{ once: true }}
+                    >
+                        <motion.div
+                            className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5 }}
+                            viewport={{ once: true }}
+                        >
                             <Settings className="w-10 h-10 md:w-14 md:h-14 text-zinc-700" />
-                        </div>
-                        <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105">
+                        </motion.div>
+                        <motion.div
+                            className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
+                            initial={{ opacity: 0, x: 20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5 }}
+                            viewport={{ once: true }}
+                        >
                             <Workflow className="w-10 h-10 md:w-14 md:h-14 text-zinc-700" />
-                        </div>
-                    </div>
-                </section>
+                        </motion.div>
+                    </motion.div>
+                </motion.section>
 
                 {/* SECTION 3 — FEATURE GRID */}
                 <section className="bg-zinc-50 border-y border-zinc-100 py-20">

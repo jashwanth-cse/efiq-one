@@ -4,6 +4,38 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { motion } from "motion/react";
+
+const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.6, ease: "easeOut" },
+    },
+};
+
+const formVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: {
+        opacity: 1,
+        scale: 1,
+        transition: {
+            duration: 0.6,
+            staggerChildren: 0.1,
+            delayChildren: 0.2,
+        },
+    },
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.4 },
+    },
+};
 
 export default function SignUpPage() {
     const [showPassword, setShowPassword] = useState(false);
@@ -15,15 +47,26 @@ export default function SignUpPage() {
 
             {/* Main Content Centered vertically and horizontally */}
             <main className="flex-1 flex items-center justify-center p-4 pt-24 pb-12">
-                <div className="w-full max-w-[420px] bg-white rounded-[24px] shadow-sm p-8 border border-gray-200/60">
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">Sign up</h1>
-                        <p className="text-sm text-gray-500 mt-2">Create your Epiq One account</p>
-                    </div>
+                <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    variants={containerVariants}
+                    className="w-full max-w-[420px] bg-white rounded-[24px] shadow-sm p-8 border border-gray-200/60"
+                >
+                    <motion.div variants={itemVariants} className="text-center mb-8">
+                        <motion.h1 variants={itemVariants} className="text-3xl font-extrabold tracking-tight text-gray-900">Sign up</motion.h1>
+                        <motion.p variants={itemVariants} className="text-sm text-gray-500 mt-2">Create your Epiq One account</motion.p>
+                    </motion.div>
 
-                    <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                    <motion.form
+                        initial="hidden"
+                        animate="visible"
+                        variants={formVariants}
+                        className="space-y-4"
+                        onSubmit={(e) => e.preventDefault()}
+                    >
                         {/* Name */}
-                        <div className="space-y-1.5">
+                        <motion.div variants={itemVariants} className="space-y-1.5">
                             <label className="text-sm font-semibold text-gray-700 block" htmlFor="name">
                                 Name
                             </label>
@@ -33,10 +76,10 @@ export default function SignUpPage() {
                                 placeholder="Enter your name"
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
                             />
-                        </div>
+                        </motion.div>
 
                         {/* Organization mail id */}
-                        <div className="space-y-1.5">
+                        <motion.div variants={itemVariants} className="space-y-1.5">
                             <label className="text-sm font-semibold text-gray-700 block" htmlFor="email">
                                 Organization mail id
                             </label>
@@ -46,10 +89,10 @@ export default function SignUpPage() {
                                 placeholder="you@company.com"
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
                             />
-                        </div>
+                        </motion.div>
 
                         {/* Organization Name */}
-                        <div className="space-y-1.5">
+                        <motion.div variants={itemVariants} className="space-y-1.5">
                             <label className="text-sm font-semibold text-gray-700 block" htmlFor="orgName">
                                 Organization Name
                             </label>
@@ -59,10 +102,10 @@ export default function SignUpPage() {
                                 placeholder="Acme Corp"
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green transition-all placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
                             />
-                        </div>
+                        </motion.div>
 
                         {/* Password */}
-                        <div className="space-y-1.5 relative">
+                        <motion.div variants={itemVariants} className="space-y-1.5 relative">
                             <label className="text-sm font-semibold text-gray-700 block" htmlFor="password">
                                 Password
                             </label>
@@ -82,10 +125,10 @@ export default function SignUpPage() {
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Re Enter Password */}
-                        <div className="space-y-1.5 relative">
+                        <motion.div variants={itemVariants} className="space-y-1.5 relative">
                             <label className="text-sm font-semibold text-gray-700 block" htmlFor="confirmPassword">
                                 Re Enter Password
                             </label>
@@ -105,10 +148,10 @@ export default function SignUpPage() {
                                     {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Terms Checkbox */}
-                        <div className="flex items-start pt-3 pb-1">
+                        <motion.div variants={itemVariants} className="flex items-start pt-3 pb-1">
                             <div className="flex items-center h-5 mt-0.5">
                                 <input
                                     id="terms"
@@ -128,15 +171,17 @@ export default function SignUpPage() {
                                     </Link>
                                 </label>
                             </div>
-                        </div>
+                        </motion.div>
 
-                        <div className="pt-4 space-y-4">
-                            <button
+                        <motion.div variants={itemVariants} className="pt-4 space-y-4">
+                            <motion.button
                                 type="submit"
                                 className="w-full py-3.5 px-4 bg-brand-green hover:bg-brand-green/90 text-zinc-900 font-bold rounded-full transition-all focus:ring-2 focus:ring-brand-green focus:ring-offset-2 flex justify-center items-center active:scale-[0.98]"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
                             >
                                 Sign Up
-                            </button>
+                            </motion.button>
 
                             <div className="relative flex items-center justify-center">
                                 <div className="absolute inset-0 flex items-center">
@@ -147,15 +192,20 @@ export default function SignUpPage() {
                                 </div>
                             </div>
 
-                            <Link
-                                href="/registration/login"
-                                className="w-full py-3.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-full transition-all flex justify-center items-center active:scale-[0.98]"
+                            <motion.div
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
                             >
-                                Log in
-                            </Link>
-                        </div>
-                    </form>
-                </div>
+                                <Link
+                                    href="/registration/login"
+                                    className="w-full py-3.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-full transition-all flex justify-center items-center active:scale-[0.98] block"
+                                >
+                                    Log in
+                                </Link>
+                            </motion.div>
+                        </motion.div>
+                    </motion.form>
+                </motion.div>
             </main>
         </div>
     );
