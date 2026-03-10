@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import Link from "next/link";
-import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "motion/react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
@@ -45,17 +45,63 @@ function use3DTilt() {
 }
 
 /* ── EFIQ One Logo SVG ── */
-function EfiqLogo({ size = 56 }) {
+function EfiqLogo({ size = 56, isTyping = false }) {
   return (
-    <div className="flex items-center gap-3">
-      <svg viewBox="10 0 80 95" style={{ height: size, width: "auto" }} aria-hidden="true">
-        <path d="M 10 48 L 10 70 A 25 25 0 0 0 35 95 L 65 95 A 25 25 0 0 0 90 70 L 90 48 L 65 48 L 65 70 L 35 70 L 35 48 Z" fill="#5a78ff" />
-        <path d="M 90 48 L 90 25 A 25 25 0 0 0 65 0 L 10 0 L 35 25 L 65 25 L 65 48 Z" fill="#82e05a" />
-      </svg>
-      <div className="flex flex-col justify-center">
-        <span className="font-orbitron font-bold text-[11px] tracking-[0.22em] text-white leading-none mb-0.5">EFIQ</span>
-        <span className="font-orbitron font-black text-[26px] text-white leading-none tracking-tight">ONE</span>
+    <div className="relative flex items-center justify-center">
+      {/* Pulse effect behind logo when typing */}
+      <AnimatePresence>
+        {isTyping && (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: [1.2, 2.5], opacity: [0.6, 0] }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "easeOut" }}
+            className="absolute rounded-full pointer-events-none"
+            style={{
+              width: size * 1.5,
+              height: size * 1.5,
+              background: "radial-gradient(circle, rgba(130,224,90,0.6) 0%, rgba(90,120,255,0.2) 70%, transparent 100%)",
+              filter: "blur(8px)",
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      <div className="relative z-10 flex items-center gap-3">
+        <motion.svg 
+          viewBox="10 0 80 95" 
+          style={{ height: size, width: "auto" }} 
+          aria-hidden="true"
+          animate={isTyping ? { rotateY: [0, 360], scale: [1, 1.1, 1] } : { rotateY: 0, scale: 1 }}
+          transition={isTyping ? { duration: 2, repeat: Infinity, ease: "linear" } : { duration: 0.5 }}
+        >
+          <path d="M 10 48 L 10 70 A 25 25 0 0 0 35 95 L 65 95 A 25 25 0 0 0 90 70 L 90 48 L 65 48 L 65 70 L 35 70 L 35 48 Z" fill="#5a78ff" />
+          <path d="M 90 48 L 90 25 A 25 25 0 0 0 65 0 L 10 0 L 35 25 L 65 25 L 65 48 Z" fill="#82e05a" />
+        </motion.svg>
+        <div className="flex flex-col justify-center">
+          <span className="font-orbitron font-bold text-[11px] tracking-[0.22em] text-white leading-none mb-0.5">EFIQ</span>
+          <span className="font-orbitron font-black text-[26px] text-white leading-none tracking-tight">ONE</span>
+        </div>
       </div>
+    </div>
+  );
+}
+
+/* ── Orbiting ring component ── */
+function OrbitRing({ radius, duration, dotColor, dotSize = 8, reverse = false, children }) {
+  return (
+    <div className="absolute" style={{ width: radius * 2, height: radius * 2, top: "50%", left: "50%", marginTop: -radius, marginLeft: -radius }}>
+      {/* Ring border */}
+      <div className="absolute inset-0 rounded-full" style={{ border: "1px solid rgba(255,255,255,0.05)" }} />
+      {/* Orbiting dot */}
+      <motion.div
+        className="absolute rounded-full"
+        style={{ width: dotSize, height: dotSize, background: dotColor, top: -dotSize / 2, left: "50%", marginLeft: -dotSize / 2, boxShadow: `0 0 8px 2px ${dotColor}` }}
+        animate={{ rotate: reverse ? -360 : 360 }}
+        transition={{ duration, repeat: Infinity, ease: "linear" }}
+        transformTemplate={({ rotate }) => `rotate(${rotate}) translateX(${radius}px) rotate(calc(-1 * ${rotate}))`}
+      />
+      {children}
     </div>
   );
 }
@@ -77,6 +123,16 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef(null);
+  
+  const handleTyping = (setter) => (e) => {
+    setter(e.target.value);
+    setIsTyping(true);
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1000);
+  };
+
   const tilt = use3DTilt();
   const { login } = useAuth();
   const router = useRouter();
@@ -97,11 +153,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] flex font-manrope overflow-hidden" style={{ background: "#0c0c0f" }}>
+    <div className="min-h-[100dvh] flex font-manrope overflow-hidden text-zinc-900" style={{ background: "#0c0c0f" }}>
 
       {/* ── LEFT PANEL: Branding 3D ── */}
-      <div className="hidden lg:flex lg:w-[52%] relative flex-col items-center justify-center p-12 overflow-hidden">
-
+      <div 
+        ref={tilt.ref}
+        className="hidden lg:flex lg:w-[52%] relative flex-col items-center justify-center p-12 overflow-hidden" 
+        style={{ perspective: 1200 }}
+      >
         {/* Background gradient blobs */}
         <motion.div
           className="absolute rounded-full pointer-events-none"
@@ -126,70 +185,38 @@ export default function LoginPage() {
           <rect width="100%" height="100%" fill="url(#grid)" />
         </svg>
 
-        {/* Floating dots */}
-        <GeoDot x="8%" y="15%" size={8} color="rgba(130,224,90,0.6)" delay={0} />
-        <GeoDot x="85%" y="22%" size={5} color="rgba(90,120,255,0.8)" delay={1.2} />
-        <GeoDot x="12%" y="75%" size={6} color="rgba(90,120,255,0.6)" delay={0.6} />
-        <GeoDot x="78%" y="80%" size={9} color="rgba(130,224,90,0.5)" delay={2} />
-        <GeoDot x="50%" y="9%" size={4} color="rgba(130,224,90,0.7)" delay={1.8} />
-
-        {/* Corner brackets */}
-        {[
-          { top: "5%", left: "5%", rotate: "0deg" },
-          { top: "5%", right: "5%", rotate: "90deg" },
-          { bottom: "5%", left: "5%", rotate: "-90deg" },
-          { bottom: "5%", right: "5%", rotate: "180deg" },
-        ].map((pos, i) => (
-          <motion.div
-            key={i}
-            className="absolute pointer-events-none"
-            style={{ ...pos }}
-            animate={{ opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 3, repeat: Infinity, delay: i * 0.4 }}
-          >
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style={{ transform: `rotate(${pos.rotate})` }}>
-              <path d="M 0 20 L 0 0 L 20 0" stroke="#5a78ff" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </motion.div>
-        ))}
-
-        {/* 3D Logo card */}
+        {/* 3D Container responsive to mouse */}
         <motion.div
-          ref={tilt.ref}
-          onMouseMove={tilt.onMove}
-          onMouseLeave={tilt.onLeave}
-          style={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY, transformPerspective: 900 }}
-          className="relative z-10 flex flex-col items-center gap-8"
+          className="relative z-10 flex flex-col items-center w-full max-w-lg mt-[-8%]"
+          style={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY, transformStyle: "preserve-3d" }}
+          variants={formVariants}
+          initial="hidden"
+          animate="visible"
         >
-          {/* Glowing logo container */}
+          {/* Logo with 3D Z-translation */}
           <motion.div
-            className="relative p-8 rounded-3xl flex items-center justify-center"
-            style={{
-              background: "linear-gradient(135deg, rgba(90,120,255,0.12) 0%, rgba(130,224,90,0.08) 100%)",
-              border: "1px solid rgba(90,120,255,0.3)",
-              boxShadow: "0 0 60px rgba(90,120,255,0.15), 0 0 20px rgba(130,224,90,0.08)",
-            }}
-            animate={{ boxShadow: ["0 0 40px rgba(90,120,255,0.12)", "0 0 70px rgba(90,120,255,0.25)", "0 0 40px rgba(90,120,255,0.12)"] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            variants={itemVariants}
+            className="mb-8"
+            style={{ translateZ: 50 }}
           >
-            {/* Top rainbow accent */}
-            <div className="absolute top-0 left-8 right-8 h-px" style={{ background: "linear-gradient(90deg, transparent, #5a78ff, #82e05a, transparent)" }} />
-
-            <motion.div
-              animate={{ rotateY: [0, 5, 0, -5, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              style={{ transformPerspective: 600 }}
-            >
-              <EfiqLogo size={72} />
-            </motion.div>
-
-            <div className="absolute bottom-0 left-8 right-8 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(130,224,90,0.4), transparent)" }} />
+            <EfiqLogo size={64} isTyping={isTyping} />
           </motion.div>
 
-          {/* Tagline */}
+          {/* Floating Geo Dots */}
+          <GeoDot x="10%" y="20%" size={8} color="#5a78ff" delay={0} />
+          <GeoDot x="85%" y="15%" size={12} color="#82e05a" delay={0.8} />
+          <GeoDot x="80%" y="80%" size={6} color="#5a78ff" delay={1.2} />
+          <GeoDot x="15%" y="75%" size={10} color="#82e05a" delay={0.4} />
+
+          {/* Orbiting rings adding depth */}
+          <OrbitRing radius={170} duration={20} dotColor="#5a78ff" dotSize={4} />
+          <OrbitRing radius={240} duration={28} dotColor="#82e05a" dotSize={6} reverse />
+          <OrbitRing radius={310} duration={35} dotColor="#ffffff" dotSize={3} />
+
           <motion.div
-            className="text-center"
-            initial={{ opacity: 0, y: 10 }}
+            className="text-center mt-6"
+            style={{ translateZ: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.7 }}
           >
@@ -202,7 +229,7 @@ export default function LoginPage() {
           </motion.div>
 
           {/* Animated stat pills */}
-          <div className="flex gap-4 mt-2">
+          <div className="flex gap-4 mt-8" style={{ translateZ: 40 }}>
             {[
               { label: "Attendance", color: "#5a78ff" },
               { label: "Inventory", color: "#82e05a" },
@@ -228,7 +255,7 @@ export default function LoginPage() {
 
       {/* ── RIGHT PANEL: Login Form ── */}
       <div
-        className="flex-1 flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden"
+        className="flex-1 flex flex-col items-center justify-center px-6 py-12 pt-24 lg:pt-32 relative overflow-hidden"
         style={{ background: "linear-gradient(160deg, #111116 0%, #0c0c0f 100%)" }}
       >
         {/* Subtle grid */}
@@ -251,7 +278,7 @@ export default function LoginPage() {
 
         {/* Mobile logo (visible only on small screens) */}
         <div className="lg:hidden mb-8">
-          <EfiqLogo size={44} />
+          <EfiqLogo size={44} isTyping={isTyping} />
         </div>
 
         <motion.div
@@ -259,69 +286,95 @@ export default function LoginPage() {
           initial="hidden"
           animate="visible"
           className="w-full max-w-md relative z-10"
+          style={{ perspective: 1200 }}
         >
-          {/* Card */}
-          <div
-            className="rounded-3xl p-8 sm:p-10"
-            style={{
-              background: "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              boxShadow: "0 25px 60px rgba(0,0,0,0.5)",
-            }}
+          {/* 3D Card Container responding to typing */}
+          <motion.div
+            animate={isTyping ? { rotateX: 4, rotateY: -2, scale: 0.98 } : { rotateX: 0, rotateY: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="relative"
+            style={{ transformStyle: "preserve-3d" }}
           >
+            {/* Deepest 3D Shadow/Base layer */}
+            <div 
+              className="absolute inset-0 rounded-[2.5rem] bg-zinc-300 translate-y-4 -translate-x-1 -z-20"
+              style={{ boxShadow: "0 30px 60px rgba(0,0,0,0.3)" }}
+            />
+            {/* Mid 3D layer */}
+            <div 
+              className="absolute inset-0 rounded-[2.5rem] bg-zinc-200 translate-y-2 -translate-x-0.5 -z-10"
+            />
+            
+            {/* Main Card Surface */}
+            <div
+              className="rounded-[2.5rem] p-8 sm:p-10 bg-white relative z-10"
+              style={{
+                border: "2px solid #82e05a",
+                boxShadow: "inset 0 2px 0 0 rgba(255,255,255,1), 0 10px 20px rgba(0,0,0,0.05)",
+                transformStyle: "preserve-3d",
+              }}
+            >
             {/* Top accent */}
             <div className="h-px mb-8 rounded-full" style={{ background: "linear-gradient(90deg, transparent, #5a78ff, #82e05a, transparent)" }} />
 
             {/* Header */}
             <motion.div variants={itemVariants} className="mb-8">
-              <h1 className="font-orbitron font-bold text-3xl text-white tracking-tight mb-1">Log In</h1>
-              <p className="text-sm" style={{ color: "#71717a" }}>Welcome back! Please enter your details.</p>
+              <h1 className="font-orbitron font-bold text-3xl text-zinc-900 tracking-tight mb-1">Log In</h1>
+              <p className="text-sm" style={{ color: "#52525b" }}>Welcome back! Please enter your details.</p>
             </motion.div>
 
             <form className="space-y-5" onSubmit={handleLogin}>
               {/* Email */}
-              <motion.div variants={itemVariants} className="space-y-1.5">
-                <label className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#a1a1aa" }}>Email</label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors" style={{ color: "#52525b" }}>
+              <motion.div variants={itemVariants} className="space-y-1.5" style={{ transformStyle: "preserve-3d" }}>
+                <label className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#52525b" }}>Email</label>
+                <motion.div 
+                  className="relative group rounded-xl"
+                  animate={isTyping ? { z: 20, scale: 1.03, boxShadow: "0 15px 35px rgba(90,120,255,0.15)" } : { z: 0, scale: 1, boxShadow: "none" }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                >
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors z-10" style={{ color: "#71717a" }}>
                     <Mail className="h-4 w-4" />
                   </div>
                   <input
                     type="email"
                     placeholder="you@company.com"
                     value={email || ""}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={handleTyping(setEmail)}
                     required
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl font-medium text-sm transition-all focus:outline-none"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#e4e4e7" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.boxShadow = "0 0 0 3px rgba(90,120,255,0.12)"; }}
-                    onBlur={e => { e.target.style.border = "1px solid rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; }}
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl font-medium text-sm transition-all focus:outline-none relative z-0"
+                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
                   />
-                </div>
+                </motion.div>
               </motion.div>
 
               {/* Password */}
-              <motion.div variants={itemVariants} className="space-y-1.5">
-                <label className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#a1a1aa" }}>Password</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none" style={{ color: "#52525b" }}>
+              <motion.div variants={itemVariants} className="space-y-1.5" style={{ transformStyle: "preserve-3d" }}>
+                <label className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#52525b" }}>Password</label>
+                <motion.div 
+                  className="relative rounded-xl"
+                  animate={isTyping ? { z: 20, scale: 1.03, boxShadow: "0 15px 35px rgba(90,120,255,0.15)" } : { z: 0, scale: 1, boxShadow: "none" }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                >
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10" style={{ color: "#71717a" }}>
                     <Lock className="h-4 w-4" />
                   </div>
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password || ""}
-                    onChange={e => setPassword(e.target.value)}
+                    onChange={handleTyping(setPassword)}
                     required
-                    className="w-full pl-11 pr-12 py-3.5 rounded-xl font-medium text-sm transition-all focus:outline-none"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#e4e4e7" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.boxShadow = "0 0 0 3px rgba(90,120,255,0.12)"; }}
-                    onBlur={e => { e.target.style.border = "1px solid rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; }}
+                    className="w-full pl-11 pr-12 py-3.5 rounded-xl font-medium text-sm transition-all focus:outline-none relative z-0"
+                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 inset-y-0 flex items-center transition-colors"
+                    className="absolute right-4 inset-y-0 flex items-center transition-colors z-10"
                     style={{ color: "#52525b" }}
                     onMouseEnter={e => e.currentTarget.style.color = "#82e05a"}
                     onMouseLeave={e => e.currentTarget.style.color = "#52525b"}
@@ -329,7 +382,7 @@ export default function LoginPage() {
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
-                </div>
+                </motion.div>
                 <div className="flex justify-end pt-1">
                   <Link href="#" className="text-xs font-bold transition-colors" style={{ color: "#5a78ff" }}
                     onMouseEnter={e => e.currentTarget.style.color = "#82e05a"}
@@ -371,9 +424,9 @@ export default function LoginPage() {
 
             {/* Divider */}
             <motion.div variants={itemVariants} className="my-6 flex items-center gap-4">
-              <div className="h-px flex-grow" style={{ background: "rgba(255,255,255,0.07)" }} />
-              <span className="text-xs font-bold tracking-widest uppercase" style={{ color: "#3f3f46" }}>or</span>
-              <div className="h-px flex-grow" style={{ background: "rgba(255,255,255,0.07)" }} />
+              <div className="h-px flex-grow" style={{ background: "rgba(0,0,0,0.1)" }} />
+              <span className="text-xs font-bold tracking-widest uppercase" style={{ color: "#a1a1aa" }}>or</span>
+              <div className="h-px flex-grow" style={{ background: "rgba(0,0,0,0.1)" }} />
             </motion.div>
 
             {/* Sign Up Button */}
@@ -384,27 +437,21 @@ export default function LoginPage() {
                   data-magnetic
                   className="flex justify-center items-center gap-2 w-full py-3.5 font-orbitron font-bold text-sm rounded-full tracking-widest transition-all duration-200"
                   style={{
-                    background: "rgba(90,120,255,0.08)",
-                    border: "1px solid rgba(90,120,255,0.3)",
-                    color: "#5a78ff",
+                    background: "#0c0c0f",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: "white"
                   }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = "rgba(90,120,255,0.15)";
-                    e.currentTarget.style.boxShadow = "0 0 20px rgba(90,120,255,0.2)";
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = "rgba(90,120,255,0.08)";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "#18181b"; e.currentTarget.style.boxShadow = "0 0 16px rgba(0,0,0,0.1)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "#0c0c0f"; e.currentTarget.style.boxShadow = "none"; }}
                 >
                   Create Account
                 </Link>
               </motion.div>
             </motion.div>
 
-            {/* Bottom accent */}
             <div className="h-px mt-8 rounded-full" style={{ background: "linear-gradient(90deg, transparent, rgba(90,120,255,0.2), transparent)" }} />
-          </div>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, User, Mail, Building2, Lock } from "lucide-react";
-import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "motion/react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
@@ -25,16 +25,43 @@ function use3DTilt() {
 }
 
 /* ── EFIQ ONE logo ── */
-function EfiqLogo({ size = 56 }) {
+function EfiqLogo({ size = 56, isTyping = false }) {
   return (
-    <div className="flex items-center gap-3">
-      <svg viewBox="10 0 80 95" style={{ height: size, width: "auto" }} aria-hidden="true">
-        <path d="M 10 48 L 10 70 A 25 25 0 0 0 35 95 L 65 95 A 25 25 0 0 0 90 70 L 90 48 L 65 48 L 65 70 L 35 70 L 35 48 Z" fill="#5a78ff" />
-        <path d="M 90 48 L 90 25 A 25 25 0 0 0 65 0 L 10 0 L 35 25 L 65 25 L 65 48 Z" fill="#82e05a" />
-      </svg>
-      <div className="flex flex-col justify-center">
-        <span className="font-orbitron font-bold text-[11px] tracking-[0.22em] text-white leading-none mb-0.5">EFIQ</span>
-        <span className="font-orbitron font-black text-[26px] text-white leading-none tracking-tight">ONE</span>
+    <div className="relative flex items-center justify-center">
+      {/* Pulse effect behind logo when typing */}
+      <AnimatePresence>
+        {isTyping && (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: [1.2, 2.5], opacity: [0.6, 0] }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "easeOut" }}
+            className="absolute rounded-full pointer-events-none"
+            style={{
+              width: size * 1.5,
+              height: size * 1.5,
+              background: "radial-gradient(circle, rgba(130,224,90,0.6) 0%, rgba(90,120,255,0.2) 70%, transparent 100%)",
+              filter: "blur(8px)",
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      <div className="relative z-10 flex items-center gap-3">
+        <motion.svg 
+          viewBox="10 0 80 95" 
+          style={{ height: size, width: "auto" }} 
+          aria-hidden="true"
+          animate={isTyping ? { rotateY: [0, 360], scale: [1, 1.1, 1] } : { rotateY: 0, scale: 1 }}
+          transition={isTyping ? { duration: 2, repeat: Infinity, ease: "linear" } : { duration: 0.5 }}
+        >
+          <path d="M 10 48 L 10 70 A 25 25 0 0 0 35 95 L 65 95 A 25 25 0 0 0 90 70 L 90 48 L 65 48 L 65 70 L 35 70 L 35 48 Z" fill="#5a78ff" />
+          <path d="M 90 48 L 90 25 A 25 25 0 0 0 65 0 L 10 0 L 35 25 L 65 25 L 65 48 Z" fill="#82e05a" />
+        </motion.svg>
+        <div className="flex flex-col justify-center">
+          <span className="font-orbitron font-bold text-[11px] tracking-[0.22em] text-white leading-none mb-0.5">EFIQ</span>
+          <span className="font-orbitron font-black text-[26px] text-white leading-none tracking-tight">ONE</span>
+        </div>
       </div>
     </div>
   );
@@ -129,6 +156,16 @@ export default function SignUpPage() {
   const [pwd, setPwd] = useState("");
   const [cpwd, setCpwd] = useState("");
   const [error, setError] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef(null);
+  
+  const handleTyping = (setter) => (e) => {
+    setter(e.target.value);
+    setIsTyping(true);
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1000);
+  };
+
   const tilt = use3DTilt();
   const { login } = useAuth();
   const router = useRouter();
@@ -149,7 +186,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] flex font-manrope overflow-hidden" style={{ background: "#0c0c0f" }}>
+    <div className="min-h-[100dvh] flex font-manrope overflow-hidden text-zinc-900" style={{ background: "#0c0c0f" }}>
 
       {/* ══ LEFT PANEL — 3D Branding ══ */}
       <div className="hidden lg:flex lg:w-[46%] relative flex-col items-center justify-center p-10 overflow-hidden">
@@ -244,7 +281,7 @@ export default function SignUpPage() {
           {/* Text */}
           <div className="text-center space-y-3">
             <div className="flex justify-center">
-              <EfiqLogo size={44} />
+              <EfiqLogo size={44} isTyping={isTyping} />
             </div>
             <motion.h2
               className="font-orbitron font-bold text-xl text-white tracking-wide"
@@ -253,7 +290,7 @@ export default function SignUpPage() {
             >
               <ScrambleText text="JOIN EFIQ ONE" trigger={1} />
             </motion.h2>
-            <p className="font-manrope text-sm" style={{ color: "#52525b" }}>
+            <p className="font-manrope text-sm" style={{ color: "#71717a" }}>
               Centralize people, operations &amp; resources.
             </p>
           </div>
@@ -287,7 +324,7 @@ export default function SignUpPage() {
       </div>
 
       {/* ══ RIGHT PANEL — Form ══ */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-10 relative overflow-hidden"
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-10 pt-24 lg:pt-32 relative overflow-hidden"
         style={{ background: "linear-gradient(160deg, #111116 0%, #0c0c0f 100%)" }}
       >
         {/* Subtle grid */}
@@ -309,7 +346,7 @@ export default function SignUpPage() {
 
         {/* Mobile logo */}
         <div className="lg:hidden mb-6">
-          <EfiqLogo size={40} />
+          <EfiqLogo size={40} isTyping={isTyping} />
         </div>
 
         <motion.div
@@ -317,111 +354,156 @@ export default function SignUpPage() {
           initial="hidden"
           animate="visible"
           className="w-full max-w-md relative z-10"
+          style={{ perspective: 1200 }}
         >
-          <div
-            className="rounded-3xl p-7 sm:p-9"
-            style={{
-              background: "linear-gradient(135deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.02) 100%)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              boxShadow: "0 30px 70px rgba(0,0,0,0.55)",
-            }}
+          {/* 3D Card Container responding to typing */}
+          <motion.div
+            animate={isTyping ? { rotateX: 4, rotateY: -2, scale: 0.98 } : { rotateX: 0, rotateY: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="relative"
+            style={{ transformStyle: "preserve-3d" }}
           >
+            {/* Deepest 3D Shadow/Base layer */}
+            <div 
+              className="absolute inset-0 rounded-[2.5rem] bg-zinc-300 translate-y-4 -translate-x-1 -z-20"
+              style={{ boxShadow: "0 30px 60px rgba(0,0,0,0.3)" }}
+            />
+            {/* Mid 3D layer */}
+            <div 
+              className="absolute inset-0 rounded-[2.5rem] bg-zinc-200 translate-y-2 -translate-x-0.5 -z-10"
+            />
+            
+            {/* Main Card Surface */}
+            <div
+              className="rounded-[2.5rem] p-7 sm:p-9 bg-white relative z-10"
+              style={{
+                border: "2px solid #82e05a",
+                boxShadow: "inset 0 2px 0 0 rgba(255,255,255,1), 0 10px 20px rgba(0,0,0,0.05)",
+                transformStyle: "preserve-3d",
+              }}
+            >
             {/* Top accent line */}
             <div className="h-px mb-7 rounded-full" style={{ background: "linear-gradient(90deg, transparent, #5a78ff, #82e05a, transparent)" }} />
 
             {/* Header */}
             <motion.div variants={itemVariants} className="mb-6">
-              <h1 className="font-orbitron font-bold text-2xl sm:text-3xl text-white tracking-tight mb-1">
+              <h1 className="font-orbitron font-bold text-2xl sm:text-3xl text-zinc-900 tracking-tight mb-1">
                 Create Account
               </h1>
-              <p className="text-sm" style={{ color: "#71717a" }}>Start your EFIQ ONE journey today.</p>
+              <p className="text-sm" style={{ color: "#52525b" }}>Start your EFIQ ONE journey today.</p>
             </motion.div>
 
             <form className="space-y-4" onSubmit={handleSignUp}>
               {/* Name */}
-              <motion.div variants={itemVariants} className="space-y-1.5">
-                <label className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#a1a1aa" }}>Full Name</label>
-                <div className="relative"><div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" style={{ color: "#52525b" }}><User className="w-4 h-4" /></div>
-                  <input id="name" type="text" placeholder="Jane Doe" value={name || ""} onChange={e => setName(e.target.value)} required
-                    className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#e4e4e7" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.boxShadow = "0 0 0 3px rgba(90,120,255,0.1)"; }}
-                    onBlur={e => { e.target.style.border = "1px solid rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; }}
-                /></div>
+              <motion.div variants={itemVariants} className="space-y-1.5" style={{ transformStyle: "preserve-3d" }}>
+                <label className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#52525b" }}>Full Name</label>
+                <motion.div 
+                  className="relative group rounded-xl"
+                  animate={isTyping ? { z: 20, scale: 1.03, boxShadow: "0 15px 35px rgba(90,120,255,0.15)" } : { z: 0, scale: 1, boxShadow: "none" }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                >
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10" style={{ color: "#71717a" }}><User className="w-4 h-4" /></div>
+                  <input id="name" type="text" placeholder="Jane Doe" value={name || ""} onChange={handleTyping(setName)} required
+                    className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none relative z-0"
+                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
+                  />
+                </motion.div>
               </motion.div>
 
               {/* Email */}
-              <motion.div variants={itemVariants} className="space-y-1.5">
-                <label className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#a1a1aa" }}>Organisation Email</label>
-                <div className="relative"><div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" style={{ color: "#52525b" }}><Mail className="w-4 h-4" /></div>
-                  <input id="email" type="email" placeholder="you@company.com" value={email || ""} onChange={e => setEmail(e.target.value)} required
-                    className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#e4e4e7" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.boxShadow = "0 0 0 3px rgba(90,120,255,0.1)"; }}
-                    onBlur={e => { e.target.style.border = "1px solid rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; }}
-                /></div>
+              <motion.div variants={itemVariants} className="space-y-1.5" style={{ transformStyle: "preserve-3d" }}>
+                <label className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#52525b" }}>Organisation Email</label>
+                <motion.div 
+                  className="relative group rounded-xl"
+                  animate={isTyping ? { z: 20, scale: 1.03, boxShadow: "0 15px 35px rgba(90,120,255,0.15)" } : { z: 0, scale: 1, boxShadow: "none" }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                >
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10" style={{ color: "#71717a" }}><Mail className="w-4 h-4" /></div>
+                  <input id="email" type="email" placeholder="you@company.com" value={email || ""} onChange={handleTyping(setEmail)} required
+                    className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none relative z-0"
+                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
+                  />
+                </motion.div>
               </motion.div>
 
               {/* Org Name */}
-              <motion.div variants={itemVariants} className="space-y-1.5">
-                <label className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#a1a1aa" }}>Organisation Name</label>
-                <div className="relative"><div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" style={{ color: "#52525b" }}><Building2 className="w-4 h-4" /></div>
-                  <input id="org" type="text" placeholder="Acme Corp" value={org || ""} onChange={e => setOrg(e.target.value)} required
-                    className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#e4e4e7" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.boxShadow = "0 0 0 3px rgba(90,120,255,0.1)"; }}
-                    onBlur={e => { e.target.style.border = "1px solid rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; }}
-                /></div>
+              <motion.div variants={itemVariants} className="space-y-1.5" style={{ transformStyle: "preserve-3d" }}>
+                <label className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#52525b" }}>Organisation Name</label>
+                <motion.div 
+                  className="relative group rounded-xl"
+                  animate={isTyping ? { z: 20, scale: 1.03, boxShadow: "0 15px 35px rgba(90,120,255,0.15)" } : { z: 0, scale: 1, boxShadow: "none" }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                >
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10" style={{ color: "#71717a" }}><Building2 className="w-4 h-4" /></div>
+                  <input id="org" type="text" placeholder="Acme Corp" value={org || ""} onChange={handleTyping(setOrg)} required
+                    className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none relative z-0"
+                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
+                  />
+                </motion.div>
               </motion.div>
 
               {/* Password */}
-              <motion.div variants={itemVariants} className="space-y-1.5">
-                <label htmlFor="pwd" className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#a1a1aa" }}>Password</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" style={{ color: "#52525b" }}>
+              <motion.div variants={itemVariants} className="space-y-1.5" style={{ transformStyle: "preserve-3d" }}>
+                <label htmlFor="pwd" className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#52525b" }}>Password</label>
+                <motion.div 
+                  className="relative rounded-xl"
+                  animate={isTyping ? { z: 20, scale: 1.03, boxShadow: "0 15px 35px rgba(90,120,255,0.15)" } : { z: 0, scale: 1, boxShadow: "none" }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                >
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10" style={{ color: "#71717a" }}>
                     <Lock className="w-4 h-4" />
                   </div>
                   <input id="pwd" type={showPwd ? "text" : "password"} placeholder="Create a password"
-                    value={pwd || ""} onChange={e => setPwd(e.target.value)} required
-                    className="w-full pl-10 pr-11 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#e4e4e7" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.boxShadow = "0 0 0 3px rgba(90,120,255,0.1)"; }}
-                    onBlur={e => { e.target.style.border = "1px solid rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; }}
+                    value={pwd || ""} onChange={handleTyping(setPwd)} required
+                    className="w-full pl-10 pr-11 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none relative z-0"
+                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
                   />
                   <button type="button" onClick={() => setShowPwd(!showPwd)}
-                    className="absolute right-3.5 inset-y-0 flex items-center transition-colors"
-                    style={{ color: "#52525b" }}
+                    className="absolute right-3.5 inset-y-0 flex items-center transition-colors z-10"
+                    style={{ color: "#71717a" }}
                     onMouseEnter={e => e.currentTarget.style.color = "#82e05a"}
-                    onMouseLeave={e => e.currentTarget.style.color = "#52525b"}
+                    onMouseLeave={e => e.currentTarget.style.color = "#71717a"}
                   >
                     {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
-                </div>
+                </motion.div>
               </motion.div>
 
               {/* Re-enter Password */}
-              <motion.div variants={itemVariants} className="space-y-1.5">
-                <label htmlFor="cpwd" className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#a1a1aa" }}>Confirm Password</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" style={{ color: "#52525b" }}>
+              <motion.div variants={itemVariants} className="space-y-1.5" style={{ transformStyle: "preserve-3d" }}>
+                <label htmlFor="cpwd" className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#52525b" }}>Confirm Password</label>
+                <motion.div 
+                  className="relative rounded-xl"
+                  animate={isTyping ? { z: 20, scale: 1.03, boxShadow: "0 15px 35px rgba(90,120,255,0.15)" } : { z: 0, scale: 1, boxShadow: "none" }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                >
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10" style={{ color: "#71717a" }}>
                     <Lock className="w-4 h-4" />
                   </div>
                   <input id="cpwd" type={showCPwd ? "text" : "password"} placeholder="Confirm your password"
-                    value={cpwd || ""} onChange={e => setCpwd(e.target.value)} required
-                    className="w-full pl-10 pr-11 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#e4e4e7" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.boxShadow = "0 0 0 3px rgba(90,120,255,0.1)"; }}
-                    onBlur={e => { e.target.style.border = "1px solid rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; }}
+                    value={cpwd || ""} onChange={handleTyping(setCpwd)} required
+                    className="w-full pl-10 pr-11 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none relative z-0"
+                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
                   />
                   <button type="button" onClick={() => setShowCPwd(!showCPwd)}
-                    className="absolute right-3.5 inset-y-0 flex items-center transition-colors"
-                    style={{ color: "#52525b" }}
+                    className="absolute right-3.5 inset-y-0 flex items-center transition-colors z-10"
+                    style={{ color: "#71717a" }}
                     onMouseEnter={e => e.currentTarget.style.color = "#82e05a"}
-                    onMouseLeave={e => e.currentTarget.style.color = "#52525b"}
+                    onMouseLeave={e => e.currentTarget.style.color = "#71717a"}
                   >
                     {showCPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
-                </div>
+                </motion.div>
               </motion.div>
 
               {/* Terms */}
@@ -429,7 +511,7 @@ export default function SignUpPage() {
                 <div className="mt-0.5 relative flex-shrink-0">
                   <input id="terms" type="checkbox" className="w-4 h-4 rounded" style={{ accentColor: "#82e05a" }} />
                 </div>
-                <label htmlFor="terms" className="text-xs cursor-pointer leading-relaxed" style={{ color: "#71717a" }}>
+                <label htmlFor="terms" className="text-xs cursor-pointer leading-relaxed" style={{ color: "#52525b" }}>
                   By signing up I agree to the{" "}
                   <Link href="/terms" style={{ color: "#82e05a" }} className="font-bold hover:underline">Terms</Link>
                   {" "}and{" "}
@@ -450,11 +532,16 @@ export default function SignUpPage() {
                   data-cursor-focus
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  className="w-full inline-flex items-center justify-center gap-2 py-3.5 font-orbitron font-bold text-black border-2 border-black bg-brand-green rounded-full hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-300 focus:ring-2 focus:ring-brand-green focus:ring-offset-2 text-base tracking-widest"
-                  style={{ boxShadow: "0 0 18px rgba(130,224,90,0.28)" }}
+                  className="w-full inline-flex items-center justify-center gap-2 py-4 font-orbitron font-bold text-black border-2 border-black bg-brand-green rounded-full hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-300 focus:ring-2 focus:ring-brand-green focus:ring-offset-2 text-base tracking-widest"
+                  style={{ boxShadow: "0 0 20px rgba(130,224,90,0.3)", transformStyle: "preserve-3d" }}
                 >
-                  Create Account
-                  <motion.span className="inline-block" initial={{ x: 0 }} whileHover={{ x: 4 }} transition={{ duration: 0.2 }}>
+                  Sign Up
+                  <motion.span
+                    className="inline-block"
+                    initial={{ x: 0 }}
+                    whileHover={{ x: 4 }}
+                    transition={{ duration: 0.2 }}
+                  >
                     →
                   </motion.span>
                 </motion.button>
@@ -475,9 +562,13 @@ export default function SignUpPage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
                   className="w-full flex items-center justify-center gap-3 py-3 rounded-full font-orbitron font-bold text-sm tracking-wide transition-all duration-200"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "#e4e4e7" }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "0 0 16px rgba(255,255,255,0.06)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.boxShadow = "none"; }}
+                  style={{
+                    background: "#0c0c0f",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: "white"
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "#18181b"; e.currentTarget.style.boxShadow = "0 0 16px rgba(0,0,0,0.1)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "#0c0c0f"; e.currentTarget.style.boxShadow = "none"; }}
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -505,7 +596,8 @@ export default function SignUpPage() {
 
             {/* Bottom accent */}
             <div className="h-px mt-6 rounded-full" style={{ background: "linear-gradient(90deg, transparent, rgba(130,224,90,0.2), transparent)" }} />
-          </div>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </div>
