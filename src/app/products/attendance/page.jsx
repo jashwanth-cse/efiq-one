@@ -270,18 +270,16 @@ export default function AttendancePage() {
                   className="group"
                 >
                   <div
-                    className={`px-4 py-3 rounded-xl transition-all duration-300 ${
-                      activeFeature === feature.id
-                        ? "bg-brand-blue/10 border border-brand-blue/40"
-                        : "border border-transparent hover:bg-zinc-50"
-                    }`}
+                    className={`px-4 py-3 rounded-xl transition-all duration-300 ${activeFeature === feature.id
+                      ? "bg-brand-blue/10 border border-brand-blue/40"
+                      : "border border-transparent hover:bg-zinc-50"
+                      }`}
                   >
                     <p
-                      className={`font-manrope text-sm transition-colors duration-300 ${
-                        activeFeature === feature.id
-                          ? "font-bold text-zinc-900"
-                          : "font-medium text-zinc-400 group-hover:text-zinc-700"
-                      }`}
+                      className={`font-manrope text-sm transition-colors duration-300 ${activeFeature === feature.id
+                        ? "font-bold text-zinc-900"
+                        : "font-medium text-zinc-400 group-hover:text-zinc-700"
+                        }`}
                     >
                       {feature.label}
                     </p>

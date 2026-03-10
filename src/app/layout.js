@@ -37,6 +37,8 @@ export const viewport = {
   themeColor: "#6366f1",
 };
 
+import LoadingScreen from "@/components/LoadingScreen";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${orbitron.variable}`}>
@@ -53,6 +55,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="min-h-screen bg-background text-gray-900 font-display antialiased">
+        <LoadingScreen />
         <CustomCursor />
         <Navbar />
         <main className="flex-1 w-full">{children}</main>
