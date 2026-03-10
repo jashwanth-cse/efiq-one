@@ -25,19 +25,6 @@ const itemVariants = {
   },
 };
 
-const buttonVariants = {
-  hidden: { opacity: 0, scale: 0.8 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-  hover: {
-    scale: 1.05,
-    transition: { duration: 0.3 },
-  },
-};
-
 export default function ContactSalesPage() {
   return (
     <>
@@ -56,17 +43,29 @@ export default function ContactSalesPage() {
           <motion.p variants={itemVariants} className="text-gray-600 mt-4 max-w-xl mx-auto font-manrope font-bold">
             We&apos;re here to help you understand how EFIQ One can simplify your operations and support your business growth.
           </motion.p>
-          <motion.div variants={buttonVariants}>
+          
+          <motion.div variants={itemVariants} className="flex justify-center">
             <Link href="#">
               <motion.button
-                whileHover="hover"
+                data-magnetic
+                data-cursor-focus
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="mt-6 px-8 py-3 rounded-lg bg-brand-green hover:bg-blue-500 transition font-orbitron focus:ring-2 focus:ring-gray-300"
+                className="mt-6 inline-flex items-center gap-2 px-8 py-3 font-orbitron font-bold text-black border-2 border-black bg-brand-green rounded-full hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-300 focus:ring-2 focus:ring-brand-green focus:ring-offset-2"
               >
                 Book a Demo
+                <motion.span
+                  className="inline-block"
+                  initial={{ x: 0 }}
+                  whileHover={{ x: 4 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  →
+                </motion.span>
               </motion.button>
             </Link>
           </motion.div>
+
           <motion.p variants={itemVariants} className="text-gray-600 max-w-3xl mx-auto mt-10 font-manrope font-bold">
             Whether you&apos;re exploring attendance tracking, inventory management, or planning a full enterprise rollout, our team will guide you through the best plan, features, and customizations for your needs.
           </motion.p>
