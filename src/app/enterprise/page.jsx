@@ -47,11 +47,16 @@ const ScrambleText = ({ text }) => {
             setDisplayDescription(prev => 
                 prev.split("").map((_, index) => {
                     if (index < iteration) return text[index];
+                    // Add a check to not scramble spaces to keep the sentence structure readable
+                    if (text[index] === " ") return " "; 
                     return chars[Math.floor(Math.random() * chars.length)];
                 }).join("")
             );
+            
             if (iteration >= text.length) clearInterval(interval);
-            iteration += 1 / 3;
+            
+            // Speed up the reveal for longer sentences
+            iteration += text.length > 20 ? 1 : 1 / 3; 
         }, 30);
     };
 
@@ -145,22 +150,29 @@ export default function EnterprisePage() {
                 </motion.section>
 
                 {/* 3. Enterprise Description Section */}
-                <motion.section
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8 }}
-                    viewport={{ once: true }}
-                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center"
-                >
-                    <div className="max-w-[700px] mx-auto space-y-6">
-                        <motion.h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                            Every organization is different. Your software should be too.
-                        </motion.h2>
-                        <motion.p className="text-lg text-gray-600 leading-relaxed font-manrope">
-                            Complex workflows, multi-branch operations, layered teams, and department-wise structures make every enterprise unique. EPIQ One Enterprise adapts to your exact model, ensuring seamless operations across your people, processes, and resources.
-                        </motion.p>
-                    </div>
-                </motion.section>
+<motion.section
+    initial={{ opacity: 0, scale: 0.95 }}
+    whileInView={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.8 }}
+    viewport={{ once: true }}
+    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center"
+>
+    <div className="max-w-[700px] mx-auto space-y-6">
+        <motion.h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+            {/* Added the scramble component here */}
+            <ScrambleText text="Every organization is different. Your software should be too." />
+        </motion.h2>
+        
+        <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="text-lg text-gray-600 leading-relaxed font-manrope"
+        >
+            Complex workflows, multi-branch operations, layered teams, and department-wise structures make every enterprise unique. EPIQ One Enterprise adapts to your exact model, ensuring seamless operations across your people, processes, and resources.
+        </motion.p>
+    </div>
+</motion.section>
 
                 {/* 4. Enterprise Offers Section */}
                 <section ref={featureRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative">
