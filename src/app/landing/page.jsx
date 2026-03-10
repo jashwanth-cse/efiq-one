@@ -65,20 +65,29 @@ export default function LandingPage() {
                     variants={containerVariants}
                     className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center flex flex-col items-center"
                 >
-                    <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-orbitron font-bold text-zinc-900 tracking-tight max-w-4xl leading-tight">
+                    <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl lg:text-[52px] xl:text-6xl font-orbitron font-bold text-black tracking-tight w-full leading-tight whitespace-nowrap">
                         Your Business. Simplified. Streamlined.
                     </motion.h1>
-                    <motion.p variants={itemVariants} className="mt-6 text-lg md:text-xl text-zinc-600 max-w-2xl mx-auto leading-relaxed">
-                        Centralize people, operations, and resources. Automate workflows to drive efficiency and focus on what truly matters for your growth.
+                    <motion.p variants={itemVariants} className="mt-5 text-base md:text-lg font-bold text-black max-w-3xl mx-auto leading-relaxed">
+                        Centralize people, operations, and resources — all in one powerful platform.
                     </motion.p>
-                    <motion.div variants={buttonVariants} className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                    <motion.div variants={buttonVariants} className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
                         <motion.button
-                            whileHover="hover"
+                            data-magnetic
+                            data-cursor-focus
+                            whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="px-8 py-4 bg-brand-green text-black font-bold rounded-full hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-brand-green transition-colors flex items-center gap-2 text-lg"
+                            className="inline-flex items-center gap-2 px-8 py-4 font-orbitron font-bold text-black border-2 border-black bg-brand-green rounded-full hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-300 focus:ring-2 focus:ring-brand-green focus:ring-offset-2 text-lg"
                         >
-                            Get a Demo
-                            <ArrowRight className="w-5 h-5" />
+                            Get a DEMO
+                            <motion.span
+                                className="inline-block"
+                                initial={{ x: 0 }}
+                                whileHover={{ x: 4 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                →
+                            </motion.span>
                         </motion.button>
                     </motion.div>
                 </motion.section>
