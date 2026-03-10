@@ -4,6 +4,7 @@ import CustomCursor from "@/components/CustomCursor";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { motion } from "motion/react";
+import Link from "next/link";
 import {
     ArrowRight,
     Settings,
@@ -15,8 +16,94 @@ import {
     Layers,
     Clock,
     Sparkles,
-    Search
+    Search,
+    CalendarDays
 } from "lucide-react";
+import { useState } from "react";
+
+function InteractiveFeatureList() {
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const features = [
+        {
+            id: 0,
+            title: "Centralized workspace for daily operations",
+            imageDesc: "Workspace Dashboard Screenshot",
+        },
+        {
+            id: 1,
+            title: "Real-time visibility across your workforce and resources",
+            imageDesc: "Real-time Tracking Map",
+        },
+        {
+            id: 2,
+            title: "Unified dashboards for instant insights",
+            imageDesc: "Analytics Dashboard Screenshot",
+        },
+        {
+            id: 3,
+            title: "Designed to scale with your business",
+            imageDesc: "Scalability Settings Screenshot",
+        },
+    ];
+
+    return (
+        <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 lg:pt-32 pb-12 lg:pb-16 flex flex-col items-center"
+        >
+
+            <div className="flex flex-col lg:flex-row w-full gap-12 lg:gap-16 items-stretch">
+                {/* Left Side — Image Placeholder */}
+                <div className="w-full lg:w-1/2 order-2 lg:order-1 flex flex-col">
+                    <div className="relative w-full flex-grow min-h-[300px] lg:min-h-0 bg-zinc-300 shadow-sm overflow-hidden">
+                        <motion.div
+                            key={activeIndex}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.4 }}
+                            className="absolute inset-0 flex items-center justify-center"
+                        >
+                            <span className="text-zinc-600 font-bold md:text-lg text-center px-4">
+                                {features[activeIndex].imageDesc}
+                            </span>
+                        </motion.div>
+                    </div>
+                </div>
+
+                {/* Right Side — Text Content */}
+                <div className="w-full lg:w-1/2 flex flex-col order-1 lg:order-2">
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-orbitron font-bold text-zinc-900 mb-10 leading-tight">
+                        Built for teams who want clarity and control.
+                    </h2>
+
+                    <div className="flex flex-col space-y-6">
+                        {features.map((feature, index) => {
+                            const isActive = index === activeIndex;
+                            return (
+                                <div
+                                    key={feature.id}
+                                    onMouseEnter={() => setActiveIndex(index)}
+                                    className={`
+                                        cursor-pointer transition-all duration-300 py-2 border-l-4 pl-4
+                                        ${isActive ? 'border-brand-green text-zinc-900 border-opacity-100' : 'border-transparent text-zinc-400 hover:text-zinc-600'}
+                                    `}
+                                >
+                                    <h3 className={`font-bold md:text-lg ${isActive ? 'translate-x-2' : ''} transition-transform duration-300`}>
+                                        {feature.title}
+                                    </h3>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+        </motion.section>
+    );
+}
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -63,7 +150,7 @@ export default function LandingPage() {
                     initial="hidden"
                     animate="visible"
                     variants={containerVariants}
-                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center flex flex-col items-center"
+                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-8 lg:pt-32 lg:pb-12 text-center flex flex-col items-center"
                 >
                     <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl lg:text-[52px] xl:text-6xl font-orbitron font-bold text-black tracking-tight w-full leading-tight whitespace-nowrap">
                         Your Business. Simplified. Streamlined.
@@ -92,139 +179,191 @@ export default function LandingPage() {
                     </motion.div>
                 </motion.section>
 
-                {/* SECTION 2 — FEATURE ICON AREA */}
+                {/* SECTION 2 — PRODUCT SCREENSHOT PLACEHOLDER */}
                 <motion.section
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7 }}
-                    viewport={{ once: true }}
-                    className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-20"
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="w-full max-w-[70rem] mx-auto px-6 sm:px-10 lg:px-12 pt-8 pb-16 md:pt-12 md:pb-24"
                 >
                     <motion.div
-                        className="bg-zinc-100 rounded-3xl p-8 md:p-12 flex justify-center items-center gap-8 md:gap-16 shadow-inner"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.6 }}
-                        viewport={{ once: true }}
+                        className="w-full aspect-video md:aspect-[16/9] bg-gradient-to-b from-zinc-300 to-zinc-100 flex items-center justify-center relative overflow-hidden shadow-2xl rounded-xl border border-zinc-200"
+                        whileHover={{
+                            scale: 1.02,
+                            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+                        }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
                     >
-                        <motion.div
-                            className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.5 }}
-                            viewport={{ once: true }}
-                        >
-                            <Settings className="w-10 h-10 md:w-14 md:h-14 text-zinc-700" />
-                        </motion.div>
-                        <motion.div
-                            className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
-                            initial={{ opacity: 0, x: 20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.5 }}
-                            viewport={{ once: true }}
-                        >
-                            <Workflow className="w-10 h-10 md:w-14 md:h-14 text-zinc-700" />
-                        </motion.div>
+                        <span className="text-zinc-800 font-bold md:text-xl lg:text-2xl z-10 text-center px-4">
+                            Our Product Screenshot with interaction
+                        </span>
                     </motion.div>
                 </motion.section>
 
-                {/* SECTION 3 — FEATURE GRID */}
-                <section className="bg-zinc-50 border-y border-zinc-100 py-20">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-                            {[
-                                { icon: Zap, label: "Fast Automation" },
-                                { icon: ShieldCheck, label: "Secure Operations" },
-                                { icon: BarChart, label: "Deep Analytics" },
-                                { icon: Users, label: "Team Sync" },
-                                { icon: Layers, label: "Unified Resources" },
-                                { icon: Clock, label: "Real-time Tracking" },
-                                { icon: Settings, label: "Custom Workflows" },
-                                { icon: Workflow, label: "Seamless Integration" },
-                            ].map((feature, idx) => (
-                                <div key={idx} className="flex flex-col items-center text-center p-6 bg-white rounded-2xl shadow-sm border border-zinc-100 hover:shadow-md transition-shadow group">
-                                    <feature.icon className="w-8 h-8 text-zinc-400 group-hover:text-brand-green transition-colors mb-4" />
-                                    <span className="font-bold text-zinc-800">{feature.label}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* SECTION 4 — PROBLEM STATEMENT */}
-                <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center">
-                    <h2 className="text-3xl md:text-5xl font-orbitron font-bold text-zinc-900 mb-12 leading-tight">
-                        Confusion slows growth.<br />
-                        <span className="text-zinc-600 block mt-2">A clear system accelerates it.</span>
-                    </h2>
-                    <div className="w-full aspect-video md:aspect-[21/9] bg-zinc-100 rounded-3xl flex items-center justify-center border border-zinc-200 shadow-sm relative overflow-hidden group">
-                        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]" />
-                        <span className="text-zinc-400 font-bold uppercase tracking-widest relative z-10 flex flex-col items-center gap-4">
-                            <BarChart className="w-12 h-12 text-zinc-300" />
-                            Dashboard Placeholder
-                        </span>
-                    </div>
-                </section>
-
-                {/* SECTION 5 — INFORMATION SECTION */}
-                <section className="bg-zinc-50 border-t border-zinc-100 py-24">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                            <div className="aspect-square bg-zinc-200 rounded-3xl flex items-center justify-center shadow-inner border border-zinc-300 relative overflow-hidden">
-                                <span className="text-zinc-500 font-bold uppercase tracking-widest relative z-10">Product UI Placeholder</span>
+                {/* SECTION 2.5 — TRUSTED BY */}
+                <motion.section
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16"
+                >
+                    <div className="relative group cursor-pointer transition-colors duration-500 hover:bg-zinc-200 py-12 rounded-xl">
+                        {/* The Grid of Icons */}
+                        <div className="flex flex-col items-center justify-center space-y-10 relative z-0 transition-opacity duration-500 group-hover:opacity-20 text-zinc-500">
+                            {/* Top Row */}
+                            <div className="flex justify-center gap-8 sm:gap-16 md:gap-24 w-full flex-wrap sm:flex-nowrap">
+                                {[1, 2, 3, 4, 5].map((i) => (
+                                    <div key={`top-${i}`} className="flex flex-col items-center justify-center">
+                                        <CalendarDays className="w-8 h-8 md:w-10 md:h-10" strokeWidth={1.5} />
+                                    </div>
+                                ))}
                             </div>
-                            <div className="flex flex-col justify-center">
-                                <h3 className="text-3xl md:text-4xl lg:text-5xl font-orbitron font-bold text-zinc-900 mb-6 leading-tight">
-                                    Built for teams who value clarity and control.
-                                </h3>
-                                <p className="text-lg md:text-xl text-zinc-600 leading-relaxed mb-4">
-                                    Take full command of your business operations with tools designed for visibility, accountability, and immediate action.
-                                </p>
-                                <p className="text-lg md:text-xl text-zinc-600 leading-relaxed">
-                                    Reduce the noise, empower your team, and focus on delivering excellent results at pace.
-                                </p>
+
+                            {/* Center Text */}
+                            <div className="text-center z-10 transition-opacity duration-300 group-hover:opacity-0 h-6 flex items-center">
+                                <h3 className="text-sm md:text-base font-bold text-black tracking-wide font-manrope">Trusted by</h3>
+                            </div>
+
+                            {/* Bottom Row (Staggered) */}
+                            <div className="flex justify-center gap-8 sm:gap-16 md:gap-24 w-full px-4 sm:px-12 flex-wrap sm:flex-nowrap">
+                                {[1, 2, 3, 4].map((i) => (
+                                    <div key={`bottom-${i}`} className="flex flex-col items-center justify-center mt-0 sm:-mt-4">
+                                        <CalendarDays className="w-8 h-8 md:w-10 md:h-10" strokeWidth={1.5} />
+                                    </div>
+                                ))}
                             </div>
                         </div>
+
+                        {/* Hover Overlay Text */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none">
+                            <h3 className="text-lg md:text-xl font-bold text-black tracking-wide font-manrope">Meet our Clients</h3>
+                        </div>
                     </div>
-                </section>
+                </motion.section>
 
                 {/* SECTION 6 — AI SECTION */}
-                <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center flex flex-col items-center">
-                    <h2 className="text-3xl md:text-5xl lg:text-6xl font-orbitron font-bold text-zinc-900 mb-16 max-w-4xl leading-tight">
-                        Human potential, multiplied by intelligent automation.
+                <motion.section
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 md:pt-12 md:pb-16 text-center flex flex-col items-center border-t border-zinc-100"
+                >
+                    <h2 className="text-3xl md:text-5xl lg:text-6xl font-orbitron font-bold text-zinc-900 mb-12 md:mb-16 md:max-w-5xl leading-snug">
+                        Human potential, <span className='whitespace-nowrap'>multiplied by</span><br /> intelligent automation.
                     </h2>
-                    <div className="w-32 h-32 md:w-48 md:h-48 bg-zinc-900 rounded-full shadow-2xl flex items-center justify-center relative">
-                        <Sparkles className="w-12 h-12 md:w-20 md:h-20 text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                        <div className="absolute -bottom-2 -right-2 md:-bottom-4 md:-right-4 w-16 h-16 md:w-20 md:h-20 bg-white rounded-full shadow-lg border-4 border-zinc-50 flex items-center justify-center">
-                            <Search className="w-6 h-6 md:w-8 md:h-8 text-zinc-900" />
-                        </div>
-                    </div>
-                </section>
 
-                {/* SECTION 7 — PRODUCT DEMO */}
-                <section className="bg-zinc-950 py-24 md:py-32 border-t border-zinc-900">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
-                        <div className="w-full aspect-video md:aspect-[16/10] bg-zinc-900 rounded-3xl flex items-center justify-center border border-zinc-800 shadow-2xl relative overflow-hidden">
-                            {/* Ambient Glow */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-zinc-800/50 blur-[100px] rounded-full pointer-events-none" />
-                            <span className="text-zinc-600 font-bold uppercase tracking-widest relative z-10 flex flex-col items-center gap-4">
-                                Dark Dashboard UI Placeholder
-                            </span>
+                    <div className="relative flex flex-col items-center justify-center mt-4 mb-4">
+                        {/* Custom Magnifying Glass */}
+                        <div className="relative w-32 h-32 md:w-44 md:h-44">
+
+                            {/* The Handle */}
+                            <div className="absolute top-[82%] left-[82%] origin-top-left rotate-45 flex flex-row items-center gap-1.5 md:gap-2 z-0">
+                                <div className="h-4 w-10 md:h-6 md:w-14 bg-[#77E369] rounded-sm shadow-sm" />
+                                <div className="h-4 w-5 md:h-6 md:w-7 bg-[#77E369] rounded-sm shadow-sm" />
+                            </div>
+
+                            {/* The Lens / Ring */}
+                            <div className="absolute inset-0 border-[12px] md:border-[20px] border-black rounded-full bg-white z-10 flex items-center justify-center shadow-lg">
+                                {/* SVG Sparkles */}
+                                <svg viewBox="0 0 100 100" className="w-16 h-16 md:w-24 md:h-24 absolute translate-x-0 -translate-y-1">
+                                    <defs>
+                                        <linearGradient id="starGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#38bdf8" />
+                                            <stop offset="100%" stopColor="#86efac" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M50 20 Q50 50 20 50 Q50 50 50 80 Q50 50 80 50 Q50 50 50 20 Z" fill="url(#starGradient)" />
+                                    <path d="M75 30 Q75 40 65 40 Q75 40 75 50 Q75 40 85 40 Q75 40 75 30 Z" fill="url(#starGradient)" />
+                                    <path d="M70 70 Q70 77 63 77 Q70 77 70 84 Q70 77 77 77 Q70 77 70 70 Z" fill="url(#starGradient)" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        {/* Text */}
+                        <h3 className="text-3xl md:text-5xl font-orbitron font-bold text-black mt-16 md:mt-24 tracking-widest relative z-20 uppercase">
+                            EFIQ AI
+                        </h3>
+                    </div>
+                </motion.section>
+
+                {/* SECTION 7 — DASHBOARD IMAGE SPACE */}
+                <motion.section
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="w-full max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 border-t border-zinc-100"
+                >
+                    <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+
+                        {/* Left Side — Logo */}
+                        <div className="lg:col-span-3 flex flex-col items-center justify-center w-full">
+                            <div className="relative w-24 h-24 md:w-32 md:h-32">
+                                {/* The Handle (scaled down) */}
+                                <div className="absolute top-[82%] left-[82%] origin-top-left rotate-45 flex flex-row items-center gap-1 md:gap-1.5 z-0">
+                                    <div className="h-3 w-8 md:h-4 md:w-10 bg-[#77E369] rounded-sm shadow-sm" />
+                                    <div className="h-3 w-4 md:h-4 md:w-5 bg-[#77E369] rounded-sm shadow-sm" />
+                                </div>
+
+                                {/* The Lens / Ring */}
+                                <div className="absolute inset-0 border-[8px] md:border-[12px] border-black rounded-full bg-white z-10 flex items-center justify-center shadow-lg">
+                                    {/* SVG Sparkles */}
+                                    <svg viewBox="0 0 100 100" className="w-12 h-12 md:w-16 md:h-16 absolute translate-x-0 -translate-y-1">
+                                        <defs>
+                                            <linearGradient id="starGradientSmall" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" stopColor="#38bdf8" />
+                                                <stop offset="100%" stopColor="#86efac" />
+                                            </linearGradient>
+                                        </defs>
+                                        <path d="M50 20 Q50 50 20 50 Q50 50 50 80 Q50 50 80 50 Q50 50 50 20 Z" fill="url(#starGradientSmall)" />
+                                        <path d="M75 30 Q75 40 65 40 Q75 40 75 50 Q75 40 85 40 Q75 40 75 30 Z" fill="url(#starGradientSmall)" />
+                                        <path d="M70 70 Q70 77 63 77 Q70 77 70 84 Q70 77 77 77 Q70 77 70 70 Z" fill="url(#starGradientSmall)" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Side — Clean Picture Space */}
+                        <div className="lg:col-span-9 w-full flex items-center justify-center">
+                            <div className="w-full aspect-[4/3] lg:aspect-[16/9] bg-zinc-100 rounded-xl md:rounded-3xl flex items-center justify-center shadow-inner relative overflow-hidden transition-colors duration-300 hover:bg-zinc-50 border border-zinc-200">
+                                <span className="text-zinc-500 font-bold uppercase tracking-wider text-sm md:text-base relative z-10 flex flex-col items-center gap-2">
+                                    Space for Picture
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </section>
+                </motion.section>
 
                 {/* SECTION 8 — FINAL CTA */}
-                <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center flex flex-col items-center">
+                <motion.section
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.8 }}
+                    className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center flex flex-col items-center"
+                >
                     <h2 className="text-4xl md:text-6xl font-orbitron font-bold text-zinc-900 mb-8 leading-tight">
                         More output. Same team.<br />
                         <span className="text-zinc-500 block mt-2">Zero extra effort.</span>
                     </h2>
-                    <button className="px-10 py-5 bg-zinc-900 text-white font-bold rounded-full hover:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-zinc-200 transition-all shadow-xl hover:shadow-2xl flex items-center gap-3 text-xl mt-8">
-                        Get Started
-                        <ArrowRight className="w-6 h-6" />
-                    </button>
-                </section>
+
+                    <div className="mt-8 flex justify-center">
+                        <Link href="/products">
+                            <motion.button
+                                data-magnetic
+                                data-cursor-focus
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="inline-flex items-center gap-2 px-8 py-4 font-orbitron font-bold text-black border-2 border-black bg-brand-green rounded-full hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-300 focus:ring-2 focus:ring-brand-green focus:ring-offset-2 text-lg uppercase"
+                            >
+                                Get Started
+                            </motion.button>
+                        </Link>
+                    </div>
+                </motion.section>
             </div>
 
             {/* SECTION 9 — FOOTER */}
