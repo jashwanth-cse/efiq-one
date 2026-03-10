@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CustomCursor from "@/components/CustomCursor";
+import { AuthProvider } from "@/context/AuthContext";
 
 /* ── Fonts — loaded once, zero layout shift ── */
 const inter = Inter({
@@ -55,10 +56,12 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="min-h-screen bg-background text-gray-900 font-display antialiased">
-        <LoadingScreen />
-        <CustomCursor />
-        <Navbar />
-        <main className="flex-1 w-full">{children}</main>
+        <AuthProvider>
+          <LoadingScreen />
+          <CustomCursor />
+          <Navbar />
+          <main className="flex-1 w-full">{children}</main>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -92,7 +92,7 @@ function HoverCard({ product }) {
 
         <div className="flex justify-start">
           <motion.a
-            href={product.href}
+            href="/enterprise"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="inline-flex items-center gap-2 px-6 py-3 font-orbitron font-bold text-black border-2 border-black bg-brand-green rounded-full hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-300 focus:ring-2 focus:ring-brand-green focus:ring-offset-2"

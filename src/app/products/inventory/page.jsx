@@ -196,6 +196,8 @@ export default function InventoryPage() {
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <Link
+            data-magnetic
+            data-cursor-focus
             href="/products/inventory/pricing"
             className="inline-flex flex-col items-center gap-0.5 px-10 py-4 font-orbitron font-bold text-black border-2 border-black bg-brand-green rounded-full hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all duration-300 focus:ring-2 focus:ring-brand-green focus:ring-offset-2"
           >
@@ -324,6 +326,8 @@ export default function InventoryPage() {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <Link
+            data-magnetic
+            data-cursor-focus
             href="/products/inventory/pricing"
             className="inline-flex flex-col items-center gap-0.5 px-10 py-4 font-orbitron font-bold text-black border-2 border-black bg-brand-green rounded-full hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all duration-300 focus:ring-2 focus:ring-brand-green focus:ring-offset-2"
           >

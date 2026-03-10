@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import Link from "next/link";
 import Footer from "@/components/Footer";
 
 const plans = [
@@ -184,9 +185,12 @@ export default function InventoryPricingPage() {
                     </p>
                   )}
                 </div>
-                <button className="px-6 py-2 bg-brand-green text-black font-orbitron font-bold text-sm rounded-full border-2 border-black hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all duration-200">
+                <Link
+                  href={plan.id === "enterprise" ? "/enterprise" : "/contact-sales"}
+                  className="px-6 py-2 bg-brand-green text-black font-orbitron font-bold text-sm rounded-full border-2 border-black hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all duration-200"
+                >
                   {plan.cta}
-                </button>
+                </Link>
               </div>
             ))}
           </div>

@@ -137,8 +137,10 @@ export default function EnterprisePage() {
                             >
                                 <motion.h2 className="text-3xl font-bold text-gray-900">Book a 1 : 1 Call</motion.h2>
                                 <motion.a
+                                    data-magnetic
+                                    data-cursor-focus
                                     href="#"
-                                    className="inline-block w-full py-4 px-6 bg-brand-green hover:bg-brand-green/90 text-zinc-900 font-bold rounded-full transition-all text-center focus:ring-2 focus:ring-brand-green focus:ring-offset-2 text-lg mt-4"
+                                    className="inline-block w-full py-4 px-6 bg-brand-green hover:bg-brand-green/90 text-zinc-900 font-bold rounded-full transition-all text-center focus:ring-2 focus:ring-brand-green focus:ring-offset-2 text-lg mt-4 border-2 border-black hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                 >
@@ -248,14 +250,12 @@ export default function EnterprisePage() {
                         </p>
                         <div className="pt-6 flex justify-center">
                             <motion.a
-                                href="#"
-                                className="inline-block py-4 px-8 bg-brand-green hover:bg-brand-green/90 text-zinc-900 font-bold rounded-full transition-all text-lg shadow-lg"
-                                whileHover={{ 
-                                    scale: 1.1,
-                                    rotate: [0, -1, 1, 0],
-                                    transition: { duration: 0.2 }
-                                }}
-                                whileTap={{ scale: 0.9 }}
+                                data-magnetic
+                                data-cursor-focus
+                                href="/contact-sales"
+                                className="inline-block py-4 px-8 bg-brand-green text-zinc-900 font-bold rounded-full transition-all text-lg border-2 border-black hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                             >
                                 Talk to our Enterprise Expert
                             </motion.a>
