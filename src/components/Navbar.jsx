@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X, Package, Clock, BookOpen, PlayCircle, Video, Headphones, Users as UsersIcon, LayoutGrid, User } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
@@ -42,6 +42,88 @@ const resourcesDropdownData = {
     { title: "Other Services", description: "Explore all service options", icon: LayoutGrid, href: "https://efiqsolutions.com/", external: true },
   ],
 };
+
+/* ── Scramble text ── */
+function ScrambleText({ text, trigger }) {
+  const [display, setDisplay] = useState(text);
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  useEffect(() => {
+    let i = 0;
+    const iv = setInterval(() => {
+      setDisplay(text.split("").map((ch, idx) => idx < i ? text[idx] : letters[Math.floor(Math.random() * letters.length)]).join(""));
+      if (i >= text.length) clearInterval(iv);
+      i += 1 / 2;
+    }, 28);
+    return () => clearInterval(iv);
+  }, [text, trigger]);
+  return <span>{display}</span>;
+}
+
+/* ── Success Loading Overlay ── */
+function SuccessOverlay({ show, title, subtitle }) {
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0c0c0f] overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+        >
+          {/* Animated Background */}
+          <motion.div
+            className="absolute rounded-full pointer-events-none"
+            style={{ width: 600, height: 600, background: "radial-gradient(circle, rgba(130,224,90,0.15) 0%, transparent 70%)" }}
+            animate={{ scale: [1, 1.5, 1], rotate: [0, 90, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute rounded-full pointer-events-none"
+            style={{ width: 500, height: 500, background: "radial-gradient(circle, rgba(90,120,255,0.15) 0%, transparent 70%)" }}
+            animate={{ scale: [1, 1.3, 1], rotate: [0, -90, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          <motion.div
+            initial={{ scale: 0.5, rotateY: 90, opacity: 0 }}
+            animate={{ scale: 1, rotateY: 0, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
+            className="relative z-10 flex flex-col items-center"
+            style={{ perspective: 1000 }}
+          >
+            {/* Minimal EFIQ SVG for overlay without isTyping wrapper */}
+            <svg viewBox="10 0 80 95" className="h-20 w-auto mb-4 drop-shadow-lg" aria-hidden="true">
+              <path d="M 10 48 L 10 70 A 25 25 0 0 0 35 95 L 65 95 A 25 25 0 0 0 90 70 L 90 48 L 65 48 L 65 70 L 35 70 L 35 48 Z" fill="#5a78ff" />
+              <path d="M 90 48 L 90 25 A 25 25 0 0 0 65 0 L 10 0 L 35 25 L 65 25 L 65 48 Z" fill="#82e05a" />
+            </svg>
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+              className="mt-6 text-center"
+            >
+              <h2 className="text-3xl font-orbitron font-bold text-white tracking-widest mb-3">
+                <ScrambleText text={title} trigger={show} />
+              </h2>
+              <p className="text-gray-400 font-manrope text-sm tracking-wide">
+                {subtitle}
+                <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>...</motion.span>
+              </p>
+            </motion.div>
+          </motion.div>
+          
+          <motion.div
+            className="absolute bottom-0 left-0 h-1 bg-brand-green"
+            initial={{ width: "0%" }}
+            animate={{ width: "100%" }}
+            transition={{ duration: 2.5, ease: "easeInOut" }}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 function UserDropdown({ logout }) {
   return (
@@ -510,11 +592,30 @@ export default function Navbar() {
   const [isProductsHovered, setIsProductsHovered] = useState(false);
   const [isResourcesHovered, setIsResourcesHovered] = useState(false);
   const [isUserHovered, setIsUserHovered] = useState(false);
+  const [isSignoutLoading, setIsSignoutLoading] = useState(false);
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleSignOut = () => {
+    setIsSignoutLoading(true);
+    setTimeout(() => {
+      logout();
+      router.push("/");
+      setIsSignoutLoading(false);
+    }, 2500);
+  };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-zinc-900/95 backdrop-blur-md border-b border-white/5">
+    <>
+      {/* Loading Overlay */}
+      <SuccessOverlay 
+        show={isSignoutLoading} 
+        title="Signing Out of EFIQ One" 
+        subtitle="Safely ending your session and clearing workspace data" 
+      />
+
+      <header className="fixed top-0 left-0 right-0 z-50 bg-zinc-900/95 backdrop-blur-md border-b border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
@@ -643,7 +744,7 @@ export default function Navbar() {
                   <User className="w-5 h-5 text-zinc-400" />
                 </div>
                 <AnimatePresence>
-                  {isUserHovered && <UserDropdown logout={logout} />}
+                  {isUserHovered && <UserDropdown logout={handleSignOut} />}
                 </AnimatePresence>
               </div>
             ) : (
@@ -728,7 +829,7 @@ export default function Navbar() {
                         Billing
                       </button>
                     </Link>
-                    <button onClick={() => { logout(); setIsMenuOpen(false); }} className="w-full py-3 text-center font-bold font-manrope bg-white/5 hover:bg-white/10 text-red-400 rounded-xl">
+                    <button onClick={handleSignOut} className="w-full py-3 text-center font-bold font-manrope bg-white/5 hover:bg-white/10 text-red-400 rounded-xl">
                       Sign out
                     </button>
                   </>
@@ -750,5 +851,6 @@ export default function Navbar() {
         )}
       </AnimatePresence>
     </header>
+    </>
   );
 }

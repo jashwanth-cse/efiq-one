@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "motion/react";
@@ -87,6 +87,22 @@ function EfiqLogo({ size = 56, isTyping = false }) {
   );
 }
 
+/* ── Scramble text ── */
+function ScrambleText({ text, trigger }) {
+  const [display, setDisplay] = useState(text);
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  useEffect(() => {
+    let i = 0;
+    const iv = setInterval(() => {
+      setDisplay(text.split("").map((ch, idx) => idx < i ? text[idx] : letters[Math.floor(Math.random() * letters.length)]).join(""));
+      if (i >= text.length) clearInterval(iv);
+      i += 1 / 2;
+    }, 28);
+    return () => clearInterval(iv);
+  }, [text, trigger]);
+  return <span>{display}</span>;
+}
+
 /* ── Orbiting ring component ── */
 function OrbitRing({ radius, duration, dotColor, dotSize = 8, reverse = false, children }) {
   return (
@@ -118,12 +134,81 @@ function GeoDot({ x, y, size, color, delay }) {
   );
 }
 
+/* ── Success Loading Overlay ── */
+function SuccessOverlay({ show, title, subtitle }) {
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0c0c0f] overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+        >
+          {/* Animated Background */}
+          <motion.div
+            className="absolute rounded-full pointer-events-none"
+            style={{ width: 600, height: 600, background: "radial-gradient(circle, rgba(130,224,90,0.15) 0%, transparent 70%)" }}
+            animate={{ scale: [1, 1.5, 1], rotate: [0, 90, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute rounded-full pointer-events-none"
+            style={{ width: 500, height: 500, background: "radial-gradient(circle, rgba(90,120,255,0.15) 0%, transparent 70%)" }}
+            animate={{ scale: [1, 1.3, 1], rotate: [0, -90, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          <motion.div
+            initial={{ scale: 0.5, rotateY: 90, opacity: 0 }}
+            animate={{ scale: 1, rotateY: 0, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
+            className="relative z-10 flex flex-col items-center"
+            style={{ perspective: 1000 }}
+          >
+            <EfiqLogo size={96} isTyping={true} />
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+              className="mt-12 text-center"
+            >
+              <h2 className="text-3xl font-orbitron font-bold text-white tracking-widest mb-3">
+                <ScrambleText text={title} trigger={show} />
+              </h2>
+              <p className="text-gray-400 font-manrope text-sm tracking-wide">
+                {subtitle}
+                <motion.span
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                >
+                  ...
+                </motion.span>
+              </p>
+            </motion.div>
+          </motion.div>
+          
+          {/* Progress Line */}
+          <motion.div
+            className="absolute bottom-0 left-0 h-1 bg-brand-green"
+            initial={{ width: "0%" }}
+            animate={{ width: "100%" }}
+            transition={{ duration: 2.5, ease: "easeInOut" }}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isSuccessLoading, setIsSuccessLoading] = useState(false);
   const typingTimeoutRef = useRef(null);
   
   const handleTyping = (setter) => (e) => {
@@ -149,11 +234,23 @@ export default function LoginPage() {
       return;
     }
     login({ name: found.name, email: found.email, org: found.org });
-    router.push("/");
+    
+    // Trigger cinematic success loading screen
+    setIsSuccessLoading(true);
+    setTimeout(() => {
+      router.push("/");
+    }, 2500);
   };
 
   return (
     <div className="min-h-[100dvh] flex font-manrope overflow-hidden text-zinc-900" style={{ background: "#0c0c0f" }}>
+      
+      {/* Loading Overlay */}
+      <SuccessOverlay 
+        show={isSuccessLoading} 
+        title="Welcome Back to EFIQ One" 
+        subtitle="Authenticating and preparing your intelligent workspace" 
+      />
 
       {/* ── LEFT PANEL: Branding 3D ── */}
       <div 
