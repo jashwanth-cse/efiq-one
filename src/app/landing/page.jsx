@@ -18,8 +18,6 @@ import {
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useMotionValue, useSpring, useTransform } from "motion/react";
-import CustomCursor from "@/components/CustomCursor";
-import Navbar from "@/components/Navbar";
 
 /* ── 3-D smooth tilt hook using Framer Motion ── */
 function useSmooth3DTilt(amount = 15, springConfig = { damping: 20, stiffness: 150 }) {
@@ -207,7 +205,7 @@ export default function LandingPage() {
     const productTilt = useSmooth3DTilt(12);
 
     return (
-        <main className="min-h-screen flex flex-col bg-white text-zinc-900 font-manrope relative overflow-hidden">
+        <div className="min-h-screen flex flex-col bg-white text-zinc-900 font-manrope relative overflow-hidden">
             {/* Animated Light Background Elements */}
             <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center">
                 <motion.div 
@@ -229,15 +227,6 @@ export default function LandingPage() {
                     transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
                 />
 
-                {/* Light Geometric Grid */}
-                <svg className="absolute inset-0 w-full h-full opacity-[0.05]">
-                    <defs>
-                        <pattern id="lightGrid" width="60" height="60" patternUnits="userSpaceOnUse">
-                            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#000" strokeWidth="1" />
-                        </pattern>
-                    </defs>
-                    <rect width="100%" height="100%" fill="url(#lightGrid)" />
-                </svg>
 
                 {/* Floating Dots */}
                 <FloatDot x="15%" y="25%" size={8} color="rgba(130,224,90,0.6)" delay={0} />
@@ -247,8 +236,6 @@ export default function LandingPage() {
                 <FloatDot x="50%" y="15%" size={5} color="rgba(130,224,90,0.8)" delay={1.1} />
             </div>
 
-            <CustomCursor />
-            <Navbar />
 
             <div className="flex-grow pt-24 relative z-10">
                 {/* SECTION 1 — HERO */}
@@ -526,6 +513,6 @@ export default function LandingPage() {
                     </div>
                 </motion.section>
             </div>
-        </main>
+        </div>
     );
 }

@@ -68,6 +68,7 @@ export default function RootLayout({ children }) {
           <CustomCursor />
           <Navbar />
           <main className="flex-1 w-full">{children}</main>
+          <Footer />
         </AuthProvider>
       </body>
     </html>
