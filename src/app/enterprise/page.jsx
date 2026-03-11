@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { 
@@ -9,7 +9,7 @@ import {
     useTransform, 
     useSpring, 
     useVelocity,
-    useAnimationFrame
+    useMotionValue,
 } from "motion/react";
 import { ArrowRight } from "lucide-react";
 
@@ -34,10 +34,9 @@ const containerVariants = {
     },
 };
 
-// --- Custom Animation Hooks/Components ---
+// --- Custom Components ---
 
-// 1. Text Scramble Effect
-const ScrambleText = ({ text }) => {
+const ScrambleText = ({ text, ...props }) => {
     const [displayDescription, setDisplayDescription] = useState(text);
     const chars = "!<>-_\\/[]{}—=+*^?#________";
 
@@ -47,21 +46,18 @@ const ScrambleText = ({ text }) => {
             setDisplayDescription(prev => 
                 prev.split("").map((_, index) => {
                     if (index < iteration) return text[index];
-                    // Add a check to not scramble spaces to keep the sentence structure readable
                     if (text[index] === " ") return " "; 
                     return chars[Math.floor(Math.random() * chars.length)];
                 }).join("")
             );
             
             if (iteration >= text.length) clearInterval(interval);
-            
-            // Speed up the reveal for longer sentences
             iteration += text.length > 20 ? 1 : 1 / 3; 
         }, 30);
     };
 
     return (
-        <motion.span onViewportEnter={scramble} className="inline-block">
+        <motion.span {...props} onViewportEnter={scramble} className="inline-block">
             {displayDescription}
         </motion.span>
     );
@@ -69,26 +65,51 @@ const ScrambleText = ({ text }) => {
 
 export default function EnterprisePage() {
     const featureRef = useRef(null);
+    const cardRef = useRef(null);
+
+    // 1. Scroll-based logic
     const { scrollYProgress } = useScroll();
-    
-    // 2. Velocity & Spring for "Liquid" scroll feel
     const scrollVelocity = useVelocity(scrollYProgress);
     const smoothVelocity = useSpring(scrollVelocity, { damping: 50, stiffness: 400 });
     const skew = useTransform(smoothVelocity, [-1, 1], [-5, 5]);
 
-    // 3. Parallax for Feature Image
     const { scrollYProgress: featureScroll } = useScroll({
         target: featureRef,
         offset: ["start end", "end start"]
     });
     const yParallax = useTransform(featureScroll, [0, 1], [-50, 50]);
 
+    // 2. 3D Tilt Logic (copied exactly from your product card example)
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
+
+    const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), {
+        stiffness: 200,
+        damping: 20,
+    });
+    const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), {
+        stiffness: 200,
+        damping: 20,
+    });
+
+    const handleMouseMove = (e) => {
+        const rect = cardRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
+        mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+    };
+
+    const handleMouseLeave = () => {
+        mouseX.set(0);
+        mouseY.set(0);
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col font-orbitron overflow-x-hidden">
             <Navbar />
 
             <main className="flex-1 pt-24 pb-12">
-                {/* 2. Hero Section */}
+                {/* Hero Section */}
                 <motion.section
                     initial="hidden"
                     animate="visible"
@@ -124,65 +145,78 @@ export default function EnterprisePage() {
                             </motion.div>
                         </motion.div>
 
-                        {/* RIGHT SIDE */}
+                        {/* RIGHT SIDE: The Animated 3D Card */}
                         <motion.div
                             variants={itemVariants}
                             className="flex justify-center lg:justify-end"
                         >
                             <motion.div
-                                initial={{ opacity: 0, x: 50 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                transition={{ type: "spring", stiffness: 100 }}
-                                className="w-full max-w-md bg-gray-100 rounded-3xl p-10 shadow-sm border border-gray-200 flex flex-col items-center text-center space-y-6"
+                                ref={cardRef}
+                                onMouseMove={handleMouseMove}
+                                onMouseLeave={handleMouseLeave}
+                                style={{ rotateX, rotateY, transformPerspective: 800 }}
+                                className="relative w-full max-w-md bg-white border border-black/10 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-shadow duration-500 flex flex-col h-full"
+                                whileHover={{ y: -12 }}
                             >
-                                <motion.h2 className="text-3xl font-bold text-gray-900">Book a 1 : 1 Call</motion.h2>
-                                <motion.a
-                                    href="#"
-                                    className="inline-block w-full py-4 px-6 bg-brand-green hover:bg-brand-green/90 text-zinc-900 font-bold rounded-full transition-all text-center focus:ring-2 focus:ring-brand-green focus:ring-offset-2 text-lg mt-4"
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
+                                <motion.div
+                                    className="p-10 flex flex-col items-center text-center space-y-6"
+                                    whileHover={{ scale: 1.02 }}
+                                    transition={{ duration: 0.4, ease: "easeOut" }}
                                 >
-                                    Book a Call
-                                </motion.a>
+                                    <h2 className="text-3xl font-bold text-gray-900">Book a 1 : 1 Call</h2>
+                                    
+                                    <motion.a
+                                        data-magnetic
+                                        data-cursor-focus
+                                        href="/contact-sales"
+                                        className="inline-flex items-center justify-center gap-2 w-full py-4 px-6 bg-brand-green text-black border-2 border-black font-bold rounded-full transition-all text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none focus:ring-2 focus:ring-brand-green focus:ring-offset-2"
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                    >
+                                        Book a Call
+                                        <motion.span
+                                            className="inline-block"
+                                            initial={{ x: 0 }}
+                                            whileHover={{ x: 4 }}
+                                            transition={{ duration: 0.2 }}
+                                        >
+                                            →
+                                        </motion.span>
+                                    </motion.a>
+                                </motion.div>
                             </motion.div>
                         </motion.div>
                     </div>
                 </motion.section>
 
-                {/* 3. Enterprise Description Section */}
-<motion.section
-    initial={{ opacity: 0, scale: 0.95 }}
-    whileInView={{ opacity: 1, scale: 1 }}
-    transition={{ duration: 0.8 }}
-    viewport={{ once: true }}
-    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center"
->
-    <div className="max-w-[700px] mx-auto space-y-6">
-        <motion.h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-            {/* Added the scramble component here */}
-            <ScrambleText text="Every organization is different. Your software should be too." />
-        </motion.h2>
-        
-        <motion.p 
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="text-lg text-gray-600 leading-relaxed font-manrope"
-        >
-            Complex workflows, multi-branch operations, layered teams, and department-wise structures make every enterprise unique. EPIQ One Enterprise adapts to your exact model, ensuring seamless operations across your people, processes, and resources.
-        </motion.p>
-    </div>
-</motion.section>
+                {/* Remaining sections stay the same... */}
+                <motion.section
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8 }}
+                    viewport={{ once: true }}
+                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center"
+                >
+                    <div className="max-w-[700px] mx-auto space-y-6">
+                        <motion.h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+                            Every organization is different. <span className="text-brand-green"><ScrambleText text="Your software should be too." /></span>
+                        </motion.h2>
+                        
+                        <motion.p 
+                            className="text-lg text-gray-600 leading-relaxed font-manrope"
+                        >
+                            Complex workflows, multi-branch operations, layered teams, and department-wise structures make every enterprise unique. EPIQ One Enterprise adapts to your exact model, ensuring seamless operations across your people, processes, and resources.
+                        </motion.p>
+                    </div>
+                </motion.section>
 
-                {/* 4. Enterprise Offers Section */}
                 <section ref={featureRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative">
                     <div className="mb-16">
-                        <h2 className="text-sm font-bold tracking-widest text-gray-500 uppercase text-center lg:text-left selection:bg-brand-green selection:text-white">
+                        <h2 className="text-sm font-bold tracking-widest text-gray-500 uppercase text-center lg:text-left">
                             <ScrambleText text="ENTERPRISE OFFERS" />
                         </h2>
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
-                        {/* LEFT SIDE: List of features */}
                         <div className="space-y-0">
                             {[
                                 { name: "Fully Customizable Modules", active: true },
@@ -211,7 +245,6 @@ export default function EnterprisePage() {
                             ))}
                         </div>
 
-                        {/* RIGHT SIDE: Feature preview with Parallax */}
                         <motion.div 
                             style={{ y: yParallax }}
                             className="w-full aspect-video bg-gray-200 rounded-3xl flex items-center justify-center text-gray-500 text-xl font-medium border border-gray-300 sticky top-32"
@@ -221,9 +254,7 @@ export default function EnterprisePage() {
                     </div>
                 </section>
 
-                {/* 5. Call To Action Section with Velocity Ticker */}
                 <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center relative overflow-hidden">
-                    {/* Background Ticker */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
                         <motion.div 
                             style={{ skewX: skew }}
@@ -237,8 +268,6 @@ export default function EnterprisePage() {
 
                     <div className="max-w-3xl mx-auto space-y-8 relative z-10">
                         <motion.h2 
-                            initial={{ y: 20, opacity: 0 }}
-                            whileInView={{ y: 0, opacity: 1 }}
                             className="text-4xl md:text-3xl font-extrabold text-gray-900 tracking-tight"
                         >
                             Your enterprise. Your workflows. Your system.
@@ -248,16 +277,22 @@ export default function EnterprisePage() {
                         </p>
                         <div className="pt-6 flex justify-center">
                             <motion.a
-                                href="#"
-                                className="inline-block py-4 px-8 bg-brand-green hover:bg-brand-green/90 text-zinc-900 font-bold rounded-full transition-all text-lg shadow-lg"
-                                whileHover={{ 
-                                    scale: 1.1,
-                                    rotate: [0, -1, 1, 0],
-                                    transition: { duration: 0.2 }
-                                }}
-                                whileTap={{ scale: 0.9 }}
+                                data-magnetic
+                                data-cursor-focus
+                                href="/contact-sales"
+                                className="inline-flex items-center gap-2 py-4 px-8 bg-brand-green text-black border-2 border-black font-bold rounded-full transition-all text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none focus:ring-2 focus:ring-brand-green focus:ring-offset-2"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                             >
                                 Talk to our Enterprise Expert
+                                <motion.span
+                                    className="inline-block"
+                                    initial={{ x: 0 }}
+                                    whileHover={{ x: 4 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    →
+                                </motion.span>
                             </motion.a>
                         </div>
                     </div>

@@ -81,8 +81,8 @@ export default function CustomCursor() {
     /* ─────────────────────────────────────────
        Hover: enlarge cursor on interactive elements
     ───────────────────────────────────────── */
-    const HOVER_SEL = 'a, button, [data-magnetic], [role="button"]';
-    const FOCUS_SEL = "[data-cursor-focus]";
+    const HOVER_SEL = '[data-magnetic], [role="button"]';
+    const FOCUS_SEL = 'a, button, [data-cursor-focus]';
 
     const onOver = (e) => {
       if (e.target.closest(FOCUS_SEL)) {
