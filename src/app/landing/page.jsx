@@ -1,24 +1,8 @@
 "use client";
 
-import CustomCursor from "@/components/CustomCursor";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
 import { motion } from "motion/react";
 import Link from "next/link";
-import {
-    ArrowRight,
-    Settings,
-    Workflow,
-    Zap,
-    ShieldCheck,
-    BarChart,
-    Users,
-    Layers,
-    Clock,
-    Sparkles,
-    Search,
-    CalendarDays
-} from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { useState } from "react";
 
 function InteractiveFeatureList() {
@@ -141,8 +125,6 @@ const buttonVariants = {
 export default function LandingPage() {
     return (
         <main className="min-h-screen flex flex-col bg-white text-zinc-900 font-manrope">
-            <CustomCursor />
-            <Navbar />
 
             <div className="flex-grow pt-24">
                 {/* SECTION 1 — HERO */}
@@ -152,7 +134,7 @@ export default function LandingPage() {
                     variants={containerVariants}
                     className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-8 lg:pt-32 lg:pb-12 text-center flex flex-col items-center"
                 >
-                    <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl lg:text-[52px] xl:text-6xl font-orbitron font-bold text-black tracking-tight w-full leading-tight whitespace-nowrap">
+                    <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl lg:text-[52px] xl:text-6xl font-orbitron font-bold text-black tracking-tight w-full leading-tight">
                         Your Business. Simplified. Streamlined.
                     </motion.h1>
                     <motion.p variants={itemVariants} className="mt-5 text-base md:text-lg font-bold text-black max-w-3xl mx-auto leading-relaxed">
@@ -251,8 +233,8 @@ export default function LandingPage() {
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 md:pt-12 md:pb-16 text-center flex flex-col items-center border-t border-zinc-100"
                 >
-                    <h2 className="text-3xl md:text-5xl lg:text-6xl font-orbitron font-bold text-zinc-900 mb-12 md:mb-16 md:max-w-5xl leading-snug">
-                        Human potential, <span className='whitespace-nowrap'>multiplied by</span><br /> intelligent automation.
+                    <h2 className="text-3xl md:text-5xl lg:text-6xl font-orbitron font-bold text-zinc-900 mb-12 md:mb-16 md:max-w-5xl leading-snug break-words">
+                        Human potential, <span className='sm:whitespace-nowrap'>multiplied by</span><br className="hidden sm:block" /> intelligent automation.
                     </h2>
 
                     <div className="relative flex flex-col items-center justify-center mt-4 mb-4">
@@ -365,9 +347,6 @@ export default function LandingPage() {
                     </div>
                 </motion.section>
             </div>
-
-            {/* SECTION 9 — FOOTER */}
-            <Footer />
         </main>
     );
 }

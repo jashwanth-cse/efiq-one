@@ -41,11 +41,22 @@ body {
    Custom Cursor
 ────────────────────────────────────────── */
 
-/* Hide the native cursor site-wide */
+/* Hide the native cursor site-wide (desktop only) */
 *,
 *::before,
 *::after {
   cursor: none !important;
+}
+
+/* Touch/Mobile: restore native cursor — CustomCursor adds this class to <body> on touch devices */
+body.is-touch-device *,
+body.is-touch-device *::before,
+body.is-touch-device *::after {
+  cursor: auto !important;
+}
+body.is-touch-device #efiq-cursor,
+body.is-touch-device .efiq-particle {
+  display: none !important;
 }
 
 #efiq-cursor {
@@ -97,6 +108,23 @@ body {
     0 0 16px 4px rgba(90, 120, 255, 0.6),
     0 0 32px 8px rgba(90, 120, 255, 0.25),
     inset 0 0 10px 2px rgba(130, 224, 90, 0.1);
+}
+
+/* Modifiers for elements of different sizes */
+#efiq-cursor.is-small-focus {
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  box-shadow:
+    0 0 0 1.5px #5a78ff,
+    0 0 8px 2px rgba(90, 120, 255, 0.6),
+    inset 0 0 6px 1px rgba(130, 224, 90, 0.1);
+}
+
+#efiq-cursor.is-large-focus {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
 }
 
 /* ── Particle trail ── */

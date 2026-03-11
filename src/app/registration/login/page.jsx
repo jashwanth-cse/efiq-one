@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "motion/react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { signIn } from "../../../../lib/auth";
 
 /* ── Animation variants ── */
 const formVariants = {
@@ -209,10 +210,21 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isSuccessLoading, setIsSuccessLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
   const typingTimeoutRef = useRef(null);
   
-  const handleTyping = (setter) => (e) => {
+  const handleTyping = (setter, field) => (e) => {
     setter(e.target.value);
+    
+    // Clear validation error when typing
+    if (validationErrors[field]) {
+      setValidationErrors(prev => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+
     setIsTyping(true);
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1000);
@@ -222,18 +234,36 @@ export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-    // Look up stored user
-    const stored = localStorage.getItem("efiq_users");
-    const users = stored ? JSON.parse(stored) : [];
-    const found = users.find((u) => u.email === email && u.password === password);
-    if (!found) {
-      setError("Invalid email or password.");
+    setValidationErrors({});
+
+    // Manual Validation
+    if (!email.trim() || !password) {
+      setError("All fields are required");
+      const errs = {};
+      if (!email.trim()) errs.email = true;
+      if (!password) errs.password = true;
+      setValidationErrors(errs);
       return;
     }
-    login({ name: found.name, email: found.email, org: found.org });
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Invalid email format");
+      setValidationErrors({ email: true });
+      return;
+    }
+    
+    const { data, error: signInError } = await signIn({
+      email,
+      password,
+    });
+
+    if (signInError) {
+      setError(signInError.message);
+      return;
+    }
     
     // Trigger cinematic success loading screen
     setIsSuccessLoading(true);
@@ -420,7 +450,7 @@ export default function LoginPage() {
               <p className="text-sm" style={{ color: "#52525b" }}>Welcome back! Please enter your details.</p>
             </motion.div>
 
-            <form className="space-y-5" onSubmit={handleLogin}>
+            <form className="space-y-5" onSubmit={handleLogin} noValidate>
               {/* Email */}
               <motion.div variants={itemVariants} className="space-y-1.5" style={{ transformStyle: "preserve-3d" }}>
                 <label className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#52525b" }}>Email</label>
@@ -436,12 +466,12 @@ export default function LoginPage() {
                     type="email"
                     placeholder="you@company.com"
                     value={email || ""}
-                    onChange={handleTyping(setEmail)}
+                    onChange={handleTyping(setEmail, 'email')}
                     required
                     className="w-full pl-11 pr-4 py-3.5 rounded-xl font-medium text-sm transition-all focus:outline-none relative z-0"
-                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
-                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
+                    style={{ background: "#f4f4f5", border: validationErrors.email ? "1px solid #ef4444" : "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = validationErrors.email ? "1px solid #ef4444" : "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = validationErrors.email ? "1px solid #ef4444" : "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
                   />
                 </motion.div>
               </motion.div>
@@ -461,12 +491,12 @@ export default function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password || ""}
-                    onChange={handleTyping(setPassword)}
+                    onChange={handleTyping(setPassword, 'password')}
                     required
                     className="w-full pl-11 pr-12 py-3.5 rounded-xl font-medium text-sm transition-all focus:outline-none relative z-0"
-                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
-                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
+                    style={{ background: "#f4f4f5", border: validationErrors.password ? "1px solid #ef4444" : "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = validationErrors.password ? "1px solid #ef4444" : "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = validationErrors.password ? "1px solid #ef4444" : "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
                   />
                   <button
                     type="button"
@@ -480,14 +510,14 @@ export default function LoginPage() {
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </motion.div>
-                <div className="flex justify-end pt-1">
-                  <Link href="#" className="text-xs font-bold transition-colors" style={{ color: "#5a78ff" }}
+               {/* <div className="flex justify-end pt-1">
+                <Link href="#" className="text-xs font-bold transition-colors" style={{ color: "#5a78ff" }}
                     onMouseEnter={e => e.currentTarget.style.color = "#82e05a"}
                     onMouseLeave={e => e.currentTarget.style.color = "#5a78ff"}
                   >
                     Forgot Password?
                   </Link>
-                </div>
+                </div> */}
               </motion.div>
 
               {/* Error */}
