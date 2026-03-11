@@ -1,8 +1,5 @@
 "use client";
 
-import CustomCursor from "@/components/CustomCursor";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
 import { motion } from "motion/react";
 import Link from "next/link";
 import {
@@ -21,6 +18,8 @@ import {
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useMotionValue, useSpring, useTransform } from "motion/react";
+import CustomCursor from "@/components/CustomCursor";
+import Navbar from "@/components/Navbar";
 
 /* ── 3-D smooth tilt hook using Framer Motion ── */
 function useSmooth3DTilt(amount = 15, springConfig = { damping: 20, stiffness: 150 }) {
@@ -402,8 +401,8 @@ export default function LandingPage() {
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 md:pt-12 md:pb-16 text-center flex flex-col items-center border-t border-zinc-100"
                 >
-                    <h2 className="text-3xl md:text-5xl lg:text-6xl font-orbitron font-bold text-zinc-900 mb-12 md:mb-16 md:max-w-5xl leading-snug">
-                        Human potential, <span className='whitespace-nowrap'>multiplied by</span><br /> intelligent automation.
+                    <h2 className="text-3xl md:text-5xl lg:text-6xl font-orbitron font-bold text-zinc-900 mb-12 md:mb-16 md:max-w-5xl leading-snug break-words">
+                        Human potential, <span className='sm:whitespace-nowrap'>multiplied by</span><br className="hidden sm:block" /> intelligent automation.
                     </h2>
 
                     <div className="relative flex flex-col items-center justify-center mt-4 mb-4" style={{ perspective: 1000 }}>
@@ -527,9 +526,6 @@ export default function LandingPage() {
                     </div>
                 </motion.section>
             </div>
-
-            {/* SECTION 9 — FOOTER */}
-            <Footer />
         </main>
     );
 }

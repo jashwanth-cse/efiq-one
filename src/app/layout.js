@@ -29,6 +29,13 @@ export const metadata = {
   description:
     "EFIQ One — a unified ecosystem for attendance and inventory management.",
   keywords: ["EFIQ", "attendance", "inventory", "enterprise"],
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/favicon.svg",
+    shortcut: "/favicon.svg",
+  },
 };
 
 export const viewport = {

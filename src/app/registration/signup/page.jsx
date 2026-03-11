@@ -6,6 +6,7 @@ import { Eye, EyeOff, User, Mail, Building2, Lock } from "lucide-react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "motion/react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { signUp } from "../../../../lib/auth";
 
 /* ── 3-D tilt hook ── */
 function use3DTilt() {
@@ -226,10 +227,22 @@ export default function SignUpPage() {
   const [error, setError] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isSuccessLoading, setIsSuccessLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const typingTimeoutRef = useRef(null);
   
-  const handleTyping = (setter) => (e) => {
+  const handleTyping = (setter, field) => (e) => {
     setter(e.target.value);
+    
+    // Clear validation error when typing
+    if (validationErrors[field]) {
+      setValidationErrors(prev => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+
     setIsTyping(true);
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1000);
@@ -239,23 +252,70 @@ export default function SignUpPage() {
   const { login } = useAuth();
   const router = useRouter();
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     setError("");
-    if (pwd !== cpwd) { setError("Passwords do not match."); return; }
-    if (pwd.length < 6) { setError("Password must be at least 6 characters."); return; }
-    // Save user
-    const stored = localStorage.getItem("efiq_users");
-    const users = stored ? JSON.parse(stored) : [];
-    if (users.find(u => u.email === email)) { setError("An account with this email already exists."); return; }
-    const newUser = { name, email, org, password: pwd };
-    localStorage.setItem("efiq_users", JSON.stringify([...users, newUser]));
-    login({ name, email, org });
+    setValidationErrors({});
+
+    // Manual Validation
+    if (!name.trim() || !email.trim() || !org.trim() || !pwd || !cpwd) {
+      setError("All fields are required");
+      const errs = {};
+      if (!name.trim()) errs.name = true;
+      if (!email.trim()) errs.email = true;
+      if (!org.trim()) errs.org = true;
+      if (!pwd) errs.pwd = true;
+      if (!cpwd) errs.cpwd = true;
+      setValidationErrors(errs);
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Invalid email format");
+      setValidationErrors({ email: true });
+      return;
+    }
+
+    if (pwd !== cpwd) { 
+      setError("Passwords do not match."); 
+      setValidationErrors(prev => ({ ...prev, cpwd: true, pwd: true }));
+      return; 
+    }
+
+    if (pwd.length < 6) { 
+      setError("Password must be at least 6 characters."); 
+      setValidationErrors(prev => ({ ...prev, pwd: true }));
+      return; 
+    }
+
+    // Password Complexity Regex
+    const hasLowercase = /[a-z]/.test(pwd);
+    const hasUppercase = /[A-Z]/.test(pwd);
+    const hasNumber = /[0-9]/.test(pwd);
+    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?./`~]/.test(pwd);
+
+    if (!hasLowercase || !hasUppercase || !hasNumber || !hasSpecial) {
+      setError("Password must contain lowercase, uppercase, number and special character.");
+      setValidationErrors(prev => ({ ...prev, pwd: true }));
+      return;
+    }
+    
+    const { data, error: signUpError } = await signUp({
+      email,
+      password: pwd,
+      fullName: name,
+      organisationName: org,
+    });
+
+    if (signUpError) {
+      setError(signUpError.message);
+      return;
+    }
     
     // Trigger cinematic success loading screen
     setIsSuccessLoading(true);
     setTimeout(() => {
-      router.push("/");
+      router.push("/auth/verify");
     }, 2800);
   };
 
@@ -474,7 +534,7 @@ export default function SignUpPage() {
               <p className="text-sm" style={{ color: "#52525b" }}>Start your EFIQ ONE journey today.</p>
             </motion.div>
 
-            <form className="space-y-4" onSubmit={handleSignUp}>
+            <form className="space-y-4" onSubmit={handleSignUp} noValidate>
               {/* Name */}
               <motion.div variants={itemVariants} className="space-y-1.5" style={{ transformStyle: "preserve-3d" }}>
                 <label className="block text-xs font-bold tracking-widest uppercase" style={{ color: "#52525b" }}>Full Name</label>
@@ -484,11 +544,11 @@ export default function SignUpPage() {
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 >
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10" style={{ color: "#71717a" }}><User className="w-4 h-4" /></div>
-                  <input id="name" type="text" placeholder="Jane Doe" value={name || ""} onChange={handleTyping(setName)} required
+                  <input id="name" type="text" placeholder="Jane Doe" value={name || ""} onChange={handleTyping(setName, 'name')} required
                     className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none relative z-0"
-                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
-                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
+                    style={{ background: "#f4f4f5", border: validationErrors.name ? "1px solid #ef4444" : "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = validationErrors.name ? "1px solid #ef4444" : "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = validationErrors.name ? "1px solid #ef4444" : "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
                   />
                 </motion.div>
               </motion.div>
@@ -502,11 +562,11 @@ export default function SignUpPage() {
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 >
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10" style={{ color: "#71717a" }}><Mail className="w-4 h-4" /></div>
-                  <input id="email" type="email" placeholder="you@company.com" value={email || ""} onChange={handleTyping(setEmail)} required
+                  <input id="email" type="email" placeholder="you@company.com" value={email || ""} onChange={handleTyping(setEmail, 'email')} required
                     className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none relative z-0"
-                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
-                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
+                    style={{ background: "#f4f4f5", border: validationErrors.email ? "1px solid #ef4444" : "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = validationErrors.email ? "1px solid #ef4444" : "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = validationErrors.email ? "1px solid #ef4444" : "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
                   />
                 </motion.div>
               </motion.div>
@@ -520,11 +580,11 @@ export default function SignUpPage() {
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 >
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10" style={{ color: "#71717a" }}><Building2 className="w-4 h-4" /></div>
-                  <input id="org" type="text" placeholder="Acme Corp" value={org || ""} onChange={handleTyping(setOrg)} required
+                  <input id="org" type="text" placeholder="Acme Corp" value={org || ""} onChange={handleTyping(setOrg, 'org')} required
                     className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none relative z-0"
-                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
-                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
+                    style={{ background: "#f4f4f5", border: validationErrors.org ? "1px solid #ef4444" : "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = validationErrors.org ? "1px solid #ef4444" : "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = validationErrors.org ? "1px solid #ef4444" : "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
                   />
                 </motion.div>
               </motion.div>
@@ -541,11 +601,11 @@ export default function SignUpPage() {
                     <Lock className="w-4 h-4" />
                   </div>
                   <input id="pwd" type={showPwd ? "text" : "password"} placeholder="Create a password"
-                    value={pwd || ""} onChange={handleTyping(setPwd)} required
+                    value={pwd || ""} onChange={handleTyping(setPwd, 'pwd')} required
                     className="w-full pl-10 pr-11 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none relative z-0"
-                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
-                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
+                    style={{ background: "#f4f4f5", border: validationErrors.pwd ? "1px solid #ef4444" : "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = validationErrors.pwd ? "1px solid #ef4444" : "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = validationErrors.pwd ? "1px solid #ef4444" : "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
                   />
                   <button type="button" onClick={() => setShowPwd(!showPwd)}
                     className="absolute right-3.5 inset-y-0 flex items-center transition-colors z-10"
@@ -570,11 +630,11 @@ export default function SignUpPage() {
                     <Lock className="w-4 h-4" />
                   </div>
                   <input id="cpwd" type={showCPwd ? "text" : "password"} placeholder="Confirm your password"
-                    value={cpwd || ""} onChange={handleTyping(setCpwd)} required
+                    value={cpwd || ""} onChange={handleTyping(setCpwd, 'cpwd')} required
                     className="w-full pl-10 pr-11 py-3 rounded-xl text-sm font-medium transition-all focus:outline-none relative z-0"
-                    style={{ background: "#f4f4f5", border: "1px solid #e4e4e7", color: "#18181b" }}
-                    onFocus={e => { e.target.style.border = "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
-                    onBlur={e => { e.target.style.border = "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
+                    style={{ background: "#f4f4f5", border: validationErrors.cpwd ? "1px solid #ef4444" : "1px solid #e4e4e7", color: "#18181b" }}
+                    onFocus={e => { e.target.style.border = validationErrors.cpwd ? "1px solid #ef4444" : "1px solid rgba(90,120,255,0.5)"; e.target.style.background = "#ffffff"; }}
+                    onBlur={e => { e.target.style.border = validationErrors.cpwd ? "1px solid #ef4444" : "1px solid #e4e4e7"; e.target.style.background = "#f4f4f5"; }}
                   />
                   <button type="button" onClick={() => setShowCPwd(!showCPwd)}
                     className="absolute right-3.5 inset-y-0 flex items-center transition-colors z-10"
@@ -590,7 +650,14 @@ export default function SignUpPage() {
               {/* Terms */}
               <motion.div variants={itemVariants} className="flex items-start gap-3 pt-1">
                 <div className="mt-0.5 relative flex-shrink-0">
-                  <input id="terms" type="checkbox" className="w-4 h-4 rounded" style={{ accentColor: "#82e05a" }} />
+                  <input 
+                    id="terms" 
+                    type="checkbox" 
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                    className="w-4 h-4 rounded cursor-pointer" 
+                    style={{ accentColor: "#82e05a" }} 
+                  />
                 </div>
                 <label htmlFor="terms" className="text-xs cursor-pointer leading-relaxed" style={{ color: "#52525b" }}>
                   By signing up I agree to the{" "}
@@ -611,55 +678,30 @@ export default function SignUpPage() {
                   type="submit"
                   data-magnetic
                   data-cursor-focus
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="w-full inline-flex items-center justify-center gap-2 py-4 font-orbitron font-bold text-black border-2 border-black bg-brand-green rounded-full hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-300 focus:ring-2 focus:ring-brand-green focus:ring-offset-2 text-base tracking-widest"
-                  style={{ boxShadow: "0 0 20px rgba(130,224,90,0.3)", transformStyle: "preserve-3d" }}
+                  disabled={!acceptedTerms}
+                  whileHover={acceptedTerms ? { scale: 1.03 } : {}}
+                  whileTap={acceptedTerms ? { scale: 0.97 } : {}}
+                  className={`w-full inline-flex items-center justify-center gap-2 py-4 font-orbitron font-bold text-black border-2 border-black rounded-full transition-all duration-300 focus:ring-2 focus:ring-brand-green focus:ring-offset-2 text-base tracking-widest ${
+                    !acceptedTerms ? 'opacity-40 cursor-not-allowed bg-zinc-400 grayscale' : 'bg-brand-green hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none'
+                  }`}
+                  style={{ 
+                    boxShadow: acceptedTerms ? "0 0 20px rgba(130,224,90,0.3)" : "none", 
+                    transformStyle: "preserve-3d" 
+                  }}
                 >
                   Sign Up
                   <motion.span
                     className="inline-block"
                     initial={{ x: 0 }}
-                    whileHover={{ x: 4 }}
-                    transition={{ duration: 0.2 }}
+                    animate={acceptedTerms ? { x: [0, 4, 0] } : {}}
+                    transition={{ repeat: acceptedTerms ? Infinity : 0, duration: 1.5, delay: 1 }}
                   >
                     →
                   </motion.span>
                 </motion.button>
               </motion.div>
 
-              {/* OR + Google */}
-              <motion.div variants={itemVariants}>
-                <div className="flex items-center gap-3 my-1">
-                  <div className="h-px flex-grow" style={{ background: "rgba(255,255,255,0.06)" }} />
-                  <span className="text-xs font-bold tracking-widest uppercase" style={{ color: "#3f3f46" }}>or</span>
-                  <div className="h-px flex-grow" style={{ background: "rgba(255,255,255,0.06)" }} />
-                </div>
-
-                {/* Google button */}
-                <motion.button
-                  type="button"
-                  data-magnetic
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="w-full flex items-center justify-center gap-3 py-3 rounded-full font-orbitron font-bold text-sm tracking-wide transition-all duration-200"
-                  style={{
-                    background: "#0c0c0f",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    color: "white"
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "#18181b"; e.currentTarget.style.boxShadow = "0 0 16px rgba(0,0,0,0.1)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "#0c0c0f"; e.currentTarget.style.boxShadow = "none"; }}
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                  </svg>
-                  Continue with Google
-                </motion.button>
-              </motion.div>
+           
 
               {/* Already have account */}
               <motion.div variants={itemVariants} className="text-center pt-1">
