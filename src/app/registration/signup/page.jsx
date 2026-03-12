@@ -248,7 +248,7 @@ export default function SignUpPage() {
     typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1000);
   };
 
-  const tilt = use3DTilt();
+  const { ref: tiltRef, rotateX: tiltRotateX, rotateY: tiltRotateY, onMove: tiltOnMove, onLeave: tiltOnLeave } = use3DTilt();
   const { login } = useAuth();
   const router = useRouter();
 
@@ -378,10 +378,10 @@ export default function SignUpPage() {
 
         {/* 3D tilt container */}
         <motion.div
-          ref={tilt.ref}
-          onMouseMove={tilt.onMove}
-          onMouseLeave={tilt.onLeave}
-          style={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY, transformPerspective: 900 }}
+          ref={tiltRef}
+          onMouseMove={tiltOnMove}
+          onMouseLeave={tiltOnLeave}
+          style={{ rotateX: tiltRotateX, rotateY: tiltRotateY, transformPerspective: 900 }}
           className="relative z-10 flex flex-col items-center gap-10"
         >
           {/* Orbit system */}
@@ -661,9 +661,9 @@ export default function SignUpPage() {
                 </div>
                 <label htmlFor="terms" className="text-xs cursor-pointer leading-relaxed" style={{ color: "#52525b" }}>
                   By signing up I agree to the{" "}
-                  <Link href="/terms" style={{ color: "#82e05a" }} className="font-bold hover:underline">Terms</Link>
+                  <a href="https://efiqsolutions.com/" target="_blank" rel="noopener noreferrer" style={{ color: "#82e05a" }} className="font-bold hover:underline">Terms</a>
                   {" "}and{" "}
-                  <Link href="/privacy" style={{ color: "#82e05a" }} className="font-bold hover:underline">Privacy Policy</Link>
+                  <a href="https://efiqsolutions.com/" target="_blank" rel="noopener noreferrer" style={{ color: "#82e05a" }} className="font-bold hover:underline">Privacy Policy</a>
                 </label>
               </motion.div>
 
