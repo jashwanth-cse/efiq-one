@@ -230,7 +230,7 @@ export default function LoginPage() {
     typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1000);
   };
 
-  const tilt = use3DTilt();
+  const { ref: tiltRef, rotateX: tiltRotateX, rotateY: tiltRotateY, onMove: tiltOnMove, onLeave: tiltOnLeave } = use3DTilt();
   const { login } = useAuth();
   const router = useRouter();
 
@@ -284,7 +284,7 @@ export default function LoginPage() {
 
       {/* ── LEFT PANEL: Branding 3D ── */}
       <div 
-        ref={tilt.ref}
+        ref={tiltRef}
         className="hidden lg:flex lg:w-[52%] relative flex-col items-center justify-center p-12 overflow-hidden" 
         style={{ perspective: 1200 }}
       >
@@ -315,7 +315,7 @@ export default function LoginPage() {
         {/* 3D Container responsive to mouse */}
         <motion.div
           className="relative z-10 flex flex-col items-center w-full max-w-lg mt-[-8%]"
-          style={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY, transformStyle: "preserve-3d" }}
+          style={{ rotateX: tiltRotateX, rotateY: tiltRotateY, transformStyle: "preserve-3d" }}
           variants={formVariants}
           initial="hidden"
           animate="visible"

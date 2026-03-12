@@ -9,7 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
   { name: "Products", href: "/products" },
-  { name: "Resources", href: "#resources" },
+  { name: "Resources", href: "https://efiqsolutions.com/" },
   { name: "Enterprise", href: "/enterprise" },
   { name: "Pricing", href: "/pricing" },
   // { name: "Billing", href: "/billing" },
@@ -32,9 +32,9 @@ const productDropdownItems = [
 
 const resourcesDropdownData = {
   discover: [
-    { title: "Blogs", description: "Insights, tips, and product updates", icon: BookOpen, href: "#blogs" },
-    { title: "Demos", description: "See EFIQ ONE in action, live", icon: PlayCircle, href: "#demos" },
-    { title: "Tutorial Videos", description: "Step-by-step guides to get started", icon: Video, href: "#tutorials" },
+    { title: "Blogs", description: "Insights, tips, and product updates", icon: BookOpen, href: "https://efiqsolutions.com/", external: true },
+    { title: "Demos", description: "See EFIQ ONE in action, live", icon: PlayCircle, href: "/contact-sales" },
+    { title: "Tutorial Videos", description: "Step-by-step guides to get started", icon: Video, href: "/contact-sales" },
   ],
   support: [
     { title: "Client Support", description: "Help for existing customers", icon: Headphones, href: "/contact-sales" },

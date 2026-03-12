@@ -141,7 +141,7 @@ export default function ChooseProduct() {
           transition={{ delay: 0.6, duration: 0.6 }}
           className="mt-6 text-zinc-500 text-base font-display max-w-xl mx-auto"
         >
-          Choose the solution that fits your business. Hover to preview what's
+          Choose the solution that fits your business. Hover to preview what&apos;s
           coming.
         </motion.p>
       </div>
