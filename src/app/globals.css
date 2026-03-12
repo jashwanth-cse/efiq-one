@@ -63,10 +63,10 @@ body.is-touch-device .efiq-particle {
   position: fixed;
   top: 0;
   left: 0;
-  width: 10px;
-  height: 10px;
+  width: 7px;
+  height: 7px;
   /* Centre on the pointer coordinate */
-  margin: -5px 0 0 -5px;
+  margin: -3.5px 0 0 -3.5px;
   border-radius: 50%;
   /* Dual logo colors: brand-green + brand-blue */
   background: conic-gradient(from 45deg, #82e05a 0%, #5a78ff 50%, #82e05a 100%);
@@ -88,9 +88,9 @@ body.is-touch-device .efiq-particle {
 
 /* Regular interactive elements: dot grows slightly */
 #efiq-cursor.is-hovering {
-  width: 18px;
-  height: 18px;
-  margin: -9px 0 0 -9px;
+  width: 13px;
+  height: 13px;
+  margin: -6.5px 0 0 -6.5px;
   box-shadow:
     0 0 8px 3px #82e05a,
     0 0 16px 6px #5a78ff,
@@ -99,9 +99,9 @@ body.is-touch-device .efiq-particle {
 
 /* Focus-type cursor on Explore / CTA buttons: transparent ring */
 #efiq-cursor.is-focus {
-  width: 42px;
-  height: 42px;
-  margin: -21px 0 0 -21px;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
   background: transparent;
   box-shadow:
     0 0 0 2.5px #5a78ff,
@@ -112,9 +112,9 @@ body.is-touch-device .efiq-particle {
 
 /* Modifiers for elements of different sizes */
 #efiq-cursor.is-small-focus {
-  width: 24px;
-  height: 24px;
-  margin: -12px 0 0 -12px;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
   box-shadow:
     0 0 0 1.5px #5a78ff,
     0 0 8px 2px rgba(90, 120, 255, 0.6),
@@ -122,9 +122,9 @@ body.is-touch-device .efiq-particle {
 }
 
 #efiq-cursor.is-large-focus {
-  width: 64px;
-  height: 64px;
-  margin: -32px 0 0 -32px;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
 }
 
 /* ── Particle trail ── */

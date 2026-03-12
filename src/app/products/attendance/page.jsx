@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import {
-  Clock,
-  ArrowLeft,
-  ChevronDown,
-  ChevronUp,
-  Package,
-} from "lucide-react";
+import { Clock, ArrowLeft, Plus, Minus, Package } from "lucide-react";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 
@@ -79,9 +73,7 @@ function ScreenshotPlaceholder({ featureId }) {
 }
 
 /* ── FAQ Item ── */
-function FaqItem({ faq, index }) {
-  const [open, setOpen] = useState(false);
-
+function FaqItem({ faq, index, isOpen, onToggle }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -91,19 +83,19 @@ function FaqItem({ faq, index }) {
       className="border-b border-zinc-200 last:border-0"
     >
       <button
-        onClick={() => setOpen((p) => !p)}
+        onClick={onToggle}
         className="w-full flex items-start justify-between gap-4 py-5 text-left group"
-        aria-expanded={open}
+        aria-expanded={isOpen}
       >
         <span className="font-orbitron font-semibold text-sm text-zinc-900 group-hover:text-brand-blue transition-colors duration-300">
           {index + 1}. {faq.q}
         </span>
         <span className="mt-0.5 text-brand-blue shrink-0">
-          {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          {isOpen ? <Minus size={18} /> : <Plus size={18} />}
         </span>
       </button>
       <AnimatePresence initial={false}>
-        {open && (
+        {isOpen && (
           <motion.p
             key="answer"
             initial={{ height: 0, opacity: 0 }}
@@ -123,6 +115,7 @@ function FaqItem({ faq, index }) {
 /* ── Main Page ── */
 export default function AttendancePage() {
   const [activeFeature, setActiveFeature] = useState(null);
+  const [openFaq, setOpenFaq] = useState(null);
 
   return (
     <div className="min-h-screen bg-white selection:bg-brand-blue selection:text-white">
@@ -272,16 +265,18 @@ export default function AttendancePage() {
                   className="group"
                 >
                   <div
-                    className={`px-4 py-3 rounded-xl transition-all duration-300 ${activeFeature === feature.id
-                      ? "bg-brand-blue/10 border border-brand-blue/40"
-                      : "border border-transparent hover:bg-zinc-50"
-                      }`}
+                    className={`px-4 py-3 rounded-xl transition-all duration-300 ${
+                      activeFeature === feature.id
+                        ? "bg-brand-blue/10 border border-brand-blue/40"
+                        : "border border-transparent hover:bg-zinc-50"
+                    }`}
                   >
                     <p
-                      className={`font-manrope text-sm transition-colors duration-300 ${activeFeature === feature.id
-                        ? "font-bold text-zinc-900"
-                        : "font-medium text-zinc-400 group-hover:text-zinc-700"
-                        }`}
+                      className={`font-manrope text-sm transition-colors duration-300 ${
+                        activeFeature === feature.id
+                          ? "font-bold text-zinc-900"
+                          : "font-medium text-zinc-400 group-hover:text-zinc-700"
+                      }`}
                     >
                       {feature.label}
                     </p>
@@ -339,7 +334,13 @@ export default function AttendancePage() {
         </motion.h2>
         <div>
           {faqs.map((faq, i) => (
-            <FaqItem key={i} faq={faq} index={i} />
+            <FaqItem
+              key={i}
+              faq={faq}
+              index={i}
+              isOpen={openFaq === i}
+              onToggle={() => setOpenFaq(openFaq === i ? null : i)}
+            />
           ))}
         </div>
       </section>

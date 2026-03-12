@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 
@@ -56,20 +56,19 @@ const faqs = [
   },
 ];
 
-function FaqItem({ faq }) {
-  const [open, setOpen] = useState(false);
+function FaqItem({ faq, isOpen, onToggle }) {
   return (
     <div className="border-b border-zinc-200 py-4">
       <button
         className="w-full flex items-start gap-3 text-left"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
+        onClick={onToggle}
+        aria-expanded={isOpen}
       >
         <span className="mt-1 text-zinc-400 flex-shrink-0">
-          {open ? (
-            <ChevronUp className="w-4 h-4" />
+          {isOpen ? (
+            <Minus className="w-4 h-4" />
           ) : (
-            <ChevronDown className="w-4 h-4" />
+            <Plus className="w-4 h-4" />
           )}
         </span>
         <span className="font-manrope font-semibold text-sm text-zinc-800">
@@ -77,7 +76,7 @@ function FaqItem({ faq }) {
         </span>
       </button>
       <AnimatePresence initial={false}>
-        {open && (
+        {isOpen && (
           <motion.div
             key="answer"
             initial={{ height: 0, opacity: 0 }}
@@ -98,6 +97,7 @@ function FaqItem({ faq }) {
 
 export default function AttendancePricingPage() {
   const [billing, setBilling] = useState("monthly");
+  const [openFaq, setOpenFaq] = useState(null);
 
   return (
     <div className="min-h-screen bg-white text-zinc-900 flex flex-col">
@@ -186,7 +186,9 @@ export default function AttendancePricingPage() {
                   )}
                 </div>
                 <Link
-                  href={plan.id === "enterprise" ? "/enterprise" : "/contact-sales"}
+                  href={
+                    plan.id === "enterprise" ? "/enterprise" : "/contact-sales"
+                  }
                   className="px-6 py-2 bg-brand-green text-black font-orbitron font-bold text-sm rounded-full border-2 border-black hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all duration-200"
                 >
                   {plan.cta}
@@ -208,7 +210,12 @@ export default function AttendancePricingPage() {
             FAQ
           </motion.h2>
           {faqs.map((faq, i) => (
-            <FaqItem key={i} faq={faq} />
+            <FaqItem
+              key={i}
+              faq={faq}
+              isOpen={openFaq === i}
+              onToggle={() => setOpenFaq(openFaq === i ? null : i)}
+            />
           ))}
         </section>
       </main>
