@@ -16,43 +16,7 @@ import {
     Search,
     CalendarDays
 } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
-import { useMotionValue, useSpring, useTransform } from "motion/react";
 
-/* ── 3-D smooth tilt hook using Framer Motion ── */
-function useSmooth3DTilt(amount = 15, springConfig = { damping: 20, stiffness: 150 }) {
-    const ref = useRef(null);
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-
-    const mouseXSpring = useSpring(x, springConfig);
-    const mouseYSpring = useSpring(y, springConfig);
-
-    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [amount, -amount]);
-    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [-amount, amount]);
-
-    const handleMouseMove = (e) => {
-        if (!ref.current) return;
-        const rect = ref.current.getBoundingClientRect();
-        const width = rect.width;
-        const height = rect.height;
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        const xPct = mouseX / width - 0.5;
-        const yPct = mouseY / height - 0.5;
-        x.set(xPct);
-        y.set(yPct);
-    };
-
-    const handleMouseLeave = () => {
-        x.set(0);
-        y.set(0);
-    };
-
-    return { ref, rotateX, rotateY, handleMouseMove, handleMouseLeave };
-}
-
-/* ── Floating Geo Dots ── */
 function FloatDot({ x, y, size, color, delay }) {
     return (
         <motion.div
@@ -104,14 +68,11 @@ function InteractiveFeatureList() {
                 {/* Left Side — Image Placeholder */}
                 <div className="w-full lg:w-1/2 order-2 lg:order-1 flex flex-col perspective-1000">
                     <motion.div 
-                        className="relative w-full flex-grow min-h-[300px] lg:min-h-0 bg-zinc-50 border border-zinc-200 shadow-xl shadow-zinc-200/50 rounded-2xl overflow-hidden preserve-3d"
-                        whileHover={{ scale: 1.05, rotateY: -10, rotateX: 5 }}
-                        transition={{ duration: 0.6, type: "spring", stiffness: 200, damping: 20 }}
-                        style={{ transformStyle: "preserve-3d" }}
+                        className="relative w-full flex-grow min-h-[300px] lg:min-h-0 bg-zinc-50 border border-zinc-200 shadow-xl shadow-zinc-200/50 rounded-2xl overflow-hidden"
+                        whileHover={{ scale: 1.02 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
                     >
-                        {/* decorative corner blur */}
-                        <div className="absolute -top-10 -right-10 w-32 h-32 bg-brand-green/20 blur-2xl rounded-full"></div>
-                        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-brand-blue/10 blur-2xl rounded-full"></div>
+
                         
                         <motion.div
                             key={activeIndex}
@@ -119,7 +80,6 @@ function InteractiveFeatureList() {
                             animate={{ opacity: 1, z: 50, scale: 1 }}
                             transition={{ duration: 0.5, type: "spring", stiffness: 300, damping: 25 }}
                             className="absolute inset-0 flex items-center justify-center p-8 text-center"
-                            style={{ transform: "translateZ(80px)" }}
                         >
                             <span className="text-zinc-600 font-bold md:text-lg bg-white/80 backdrop-blur-md px-6 py-3 rounded-xl shadow-lg border border-zinc-100/50">
                                 {features[activeIndex].imageDesc}
@@ -152,7 +112,7 @@ function InteractiveFeatureList() {
                                     style={{ transformOrigin: "top center" }}
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${isActive ? 'bg-brand-green' : 'bg-zinc-300'}`}></div>
+                                        <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${isActive ? 'bg-zinc-900' : 'bg-zinc-300'}`}></div>
                                         <h3 className={`font-bold md:text-lg ${isActive ? 'translate-x-1' : ''} transition-transform duration-300`}>
                                             {feature.title}
                                         </h3>
@@ -201,89 +161,37 @@ const buttonVariants = {
 };
 
 export default function LandingPage() {
-    const heroTilt = useSmooth3DTilt(18);
-    const productTilt = useSmooth3DTilt(12);
 
     return (
         <div className="min-h-screen flex flex-col bg-white text-zinc-900 font-manrope relative overflow-hidden">
-            {/* Animated Light Background Elements */}
-            <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center">
-                <motion.div 
-                    className="absolute rounded-full opacity-40 blur-[100px]"
-                    style={{ background: "#82e05a", width: "40vw", height: "40vw", top: "-10%", left: "-10%" }}
-                    animate={{ scale: [1, 1.2, 1], x: [0, 50, 0], y: [0, 30, 0] }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-                />
-                <motion.div 
-                    className="absolute rounded-full opacity-30 blur-[100px]"
-                    style={{ background: "#5a78ff", width: "35vw", height: "35vw", top: "20%", right: "-10%" }}
-                    animate={{ scale: [1, 1.3, 1], x: [0, -40, 0], y: [0, -20, 0] }}
-                    transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-                />
-                <motion.div 
-                    className="absolute rounded-full opacity-20 blur-[80px]"
-                    style={{ background: "#82e05a", width: "25vw", height: "25vw", bottom: "-5%", left: "30%" }}
-                    animate={{ scale: [1, 1.1, 1], x: [0, 20, 0] }}
-                    transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-                />
 
-
-                {/* Floating Dots */}
-                <FloatDot x="15%" y="25%" size={8} color="rgba(130,224,90,0.6)" delay={0} />
-                <FloatDot x="80%" y="30%" size={6} color="rgba(90,120,255,0.5)" delay={1.5} />
-                <FloatDot x="25%" y="75%" size={12} color="rgba(90,120,255,0.4)" delay={0.7} />
-                <FloatDot x="75%" y="65%" size={9} color="rgba(130,224,90,0.7)" delay={2.2} />
-                <FloatDot x="50%" y="15%" size={5} color="rgba(130,224,90,0.8)" delay={1.1} />
-            </div>
 
 
             <div className="flex-grow pt-24 relative z-10">
                 {/* SECTION 1 — HERO */}
                 <motion.section
-                    ref={heroTilt.ref}
-                    onMouseMove={heroTilt.handleMouseMove}
-                    onMouseLeave={heroTilt.handleMouseLeave}
                     initial="hidden"
                     animate="visible"
                     variants={containerVariants}
-                    style={{ perspective: 1200 }}
                     className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-8 lg:pt-32 lg:pb-12 text-center flex flex-col items-center"
                 >
-                    <motion.div
-                        style={{ rotateX: heroTilt.rotateX, rotateY: heroTilt.rotateY, transformStyle: "preserve-3d" }}
-                        className="flex flex-col items-center justify-center w-full relative"
-                    >
-                        {/* 3D Floating Accents behind Hero Text */}
-                        <motion.div style={{ transform: "translateZ(-80px)" }} className="absolute inset-0 flex justify-center items-center pointer-events-none z-[-1]">
-                            <motion.div
-                                animate={{ rotate: 360, scale: [1, 1.1, 1] }}
-                                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                                className="w-[500px] h-[500px] rounded-full border border-zinc-200/50 opacity-50"
-                            />
-                            <motion.div
-                                animate={{ rotate: -360, scale: [1, 1.2, 1] }}
-                                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                                className="absolute w-[600px] h-[600px] rounded-full border border-dashed border-zinc-200/30 opacity-40"
-                            />
-                        </motion.div>
+                    <div className="flex flex-col items-center justify-center w-full relative">
+
 
                         <motion.h1 
                             variants={itemVariants} 
-                            style={{ transform: "translateZ(80px)" }} 
                             className="text-4xl md:text-5xl lg:text-[52px] xl:text-6xl font-orbitron font-bold text-black tracking-tight w-full leading-tight drop-shadow-sm whitespace-nowrap"
                         >
                         Your Business. Simplified. Streamlined.
                     </motion.h1>
                         <motion.p 
                             variants={itemVariants} 
-                            style={{ transform: "translateZ(60px)" }}
                             className="mt-5 text-base md:text-lg font-bold text-black max-w-3xl mx-auto leading-relaxed"
                         >
                             Centralize people, operations, and resources — all in one powerful platform.
                         </motion.p>
                         <motion.div 
                             variants={buttonVariants} 
-                            style={{ transform: "translateZ(100px)" }}
                             className="mt-12 flex flex-col sm:flex-row gap-4 justify-center"
                         >
                         <motion.button
@@ -304,7 +212,7 @@ export default function LandingPage() {
                             </motion.span>
                         </motion.button>
                     </motion.div>
-                    </motion.div>
+                    </div>
                 </motion.section>
 
                 {/* SECTION 2 — PRODUCT SCREENSHOT PLACEHOLDER */}
@@ -314,28 +222,22 @@ export default function LandingPage() {
                     viewport={{ once: true, margin: "-100px" }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     className="w-full max-w-[70rem] mx-auto px-6 sm:px-10 lg:px-12 pt-8 pb-16 md:pt-12 md:pb-24"
-                    style={{ perspective: 1500 }}
-                    ref={productTilt.ref}
-                    onMouseMove={productTilt.handleMouseMove}
-                    onMouseLeave={productTilt.handleMouseLeave}
                 >
-                    <motion.div
-                        className="w-full aspect-video md:aspect-[16/9] bg-zinc-50 border border-zinc-200/50 flex flex-col justify-center items-center rounded-2xl relative preserve-3d shadow-2xl glassmorphism"
-                        style={{ rotateX: productTilt.rotateX, rotateY: productTilt.rotateY, transformStyle: "preserve-3d" }}
+                    <div
+                        className="w-full aspect-video md:aspect-[16/9] bg-zinc-50 border border-zinc-200/50 flex flex-col justify-center items-center rounded-2xl relative shadow-2xl glassmorphism"
                     >
                         {/* Elevated Inner elements */}
-                        <div className="absolute inset-0 bg-gradient-to-tr from-brand-green/5 to-brand-blue/5 rounded-2xl" />
+
                         
-                        <motion.span 
-                            style={{ transform: "translateZ(50px)" }}
+                        <span 
                             className="text-zinc-500 font-bold md:text-xl lg:text-2xl text-center px-4 bg-white/60 backdrop-blur-md py-3 rounded-lg border border-white/50 shadow-sm"
                         >
                             [ Your Product Screenshot Here ]
-                        </motion.span>
-                        <motion.p style={{ transform: "translateZ(30px)" }} className="text-zinc-400 mt-4 text-sm text-center">
-                            High-end 3D product view placeholder.
-                        </motion.p>
-                    </motion.div>
+                        </span>
+                        <p className="text-zinc-400 mt-4 text-sm text-center">
+                            High-end product view placeholder.
+                        </p>
+                    </div>
                 </motion.section>
 
                 {/* SECTION 2.5 — TRUSTED BY */}
@@ -393,28 +295,17 @@ export default function LandingPage() {
                     </h2>
 
                     <div className="relative flex flex-col items-center justify-center mt-4 mb-4" style={{ perspective: 1000 }}>
-                        {/* Custom Animated 3D Magnifying Glass */}
-                        <motion.div 
-                            className="relative w-32 h-32 md:w-44 md:h-44"
-                            animate={{ y: [0, -15, 0], rotateX: [0, 10, 0], rotateY: [0, -10, 0] }}
-                            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                            style={{ transformStyle: "preserve-3d" }}
-                        >
-
+                        {/* Magnifying Glass Illustration (Flat) */}
+                        <div className="relative w-32 h-32 md:w-44 md:h-44 flex items-center justify-center">
+                            
                             {/* The Handle */}
-                            <motion.div 
-                                style={{ transform: "translateZ(-20px)" }}
-                                className="absolute top-[82%] left-[82%] origin-top-left rotate-45 flex flex-row items-center gap-1.5 md:gap-2 z-0"
-                            >
-                                <div className="h-4 w-10 md:h-6 md:w-14 bg-[#77E369] rounded-sm shadow-xl" />
-                                <div className="h-4 w-5 md:h-6 md:w-7 bg-[#77E369] rounded-sm shadow-xl" />
-                            </motion.div>
+                            <div className="absolute top-[82%] left-[82%] origin-top-left rotate-45 flex flex-row items-center gap-1.5 md:gap-2 z-0">
+                                <div className="h-4 w-10 md:h-6 md:w-14 bg-[#77E369] rounded-sm shadow-sm" />
+                                <div className="h-4 w-5 md:h-6 md:w-7 bg-[#77E369] rounded-sm shadow-sm" />
+                            </div>
 
                             {/* The Lens / Ring */}
-                            <motion.div 
-                                style={{ transform: "translateZ(40px)" }}
-                                className="absolute inset-0 border-[12px] md:border-[20px] border-black rounded-full bg-white/90 backdrop-blur-sm z-10 flex items-center justify-center shadow-2xl"
-                            >
+                            <div className="absolute inset-0 border-[12px] md:border-[20px] border-black rounded-full bg-white z-10 flex items-center justify-center shadow-md">
                                 {/* SVG Sparkles */}
                                 <svg viewBox="0 0 100 100" className="w-16 h-16 md:w-24 md:h-24 absolute translate-x-0 -translate-y-1">
                                     <defs>
@@ -427,8 +318,8 @@ export default function LandingPage() {
                                     <path d="M75 30 Q75 40 65 40 Q75 40 75 50 Q75 40 85 40 Q75 40 75 30 Z" fill="url(#starGradient)" />
                                     <path d="M70 70 Q70 77 63 77 Q70 77 70 84 Q70 77 77 77 Q70 77 70 70 Z" fill="url(#starGradient)" />
                                 </svg>
-                            </motion.div>
-                        </motion.div>
+                            </div>
+                        </div>
 
                         {/* Text */}
                         <h3 className="text-3xl md:text-5xl font-orbitron font-bold text-black mt-16 md:mt-24 tracking-widest relative z-20 uppercase">
