@@ -60,19 +60,19 @@ function FaqItem({ faq, isOpen, onToggle }) {
   return (
     <div className="border-b border-zinc-200 py-4">
       <button
-        className="w-full flex items-start gap-3 text-left"
+        className="w-full flex items-start justify-between gap-4 text-left"
         onClick={onToggle}
         aria-expanded={isOpen}
       >
-        <span className="mt-1 text-zinc-400 flex-shrink-0">
+        <span className="font-manrope font-semibold text-sm text-zinc-800 pr-4">
+          {faq.q}
+        </span>
+        <span className="mt-1 text-brand-blue flex-shrink-0">
           {isOpen ? (
             <Minus className="w-4 h-4" />
           ) : (
             <Plus className="w-4 h-4" />
           )}
-        </span>
-        <span className="font-manrope font-semibold text-sm text-zinc-800">
-          {faq.q}
         </span>
       </button>
       <AnimatePresence initial={false}>

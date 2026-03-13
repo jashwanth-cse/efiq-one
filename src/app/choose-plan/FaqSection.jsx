@@ -34,41 +34,38 @@ const faqs = [
 
 function FaqItem({ faq, isOpen, onToggle }) {
   return (
-    <div className="flex flex-col mb-4 bg-white rounded-lg p-2 transition-colors">
+    <div className="border-b border-zinc-200 py-4">
       <button
         type="button"
         onClick={onToggle}
-        className="flex items-start md:items-center text-left gap-4"
+        className="w-full flex items-start justify-between gap-4 text-left"
         aria-expanded={isOpen}
       >
-        {/* Plus/Minus Icon */}
-        <div className="text-blue-500 mt-0.5 md:mt-0 flex-shrink-0">
-          {isOpen ? (
-            <Minus size={20} strokeWidth={2.5} />
-          ) : (
-            <Plus size={20} strokeWidth={2.5} />
-          )}
-        </div>
-
-        {/* Question Text */}
-        <span className="text-[13px] md:text-sm font-bold text-black flex-1 pr-4 leading-snug">
+        <span className="font-manrope font-semibold text-sm text-zinc-800 pr-4">
           {faq.question}
+        </span>
+
+        <span className="mt-1 text-brand-blue flex-shrink-0">
+          {isOpen ? (
+            <Minus className="w-4 h-4" />
+          ) : (
+            <Plus className="w-4 h-4" />
+          )}
         </span>
       </button>
 
-      {/* Answer content with auto-layout sliding animation */}
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden"
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden pl-7"
           >
-            <div className="pt-2 pl-[36px] text-xs md:text-[13px] font-semibold text-black leading-relaxed">
+            <p className="pt-2 text-sm text-zinc-500 font-manrope leading-relaxed">
               {faq.answer}
-            </div>
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -84,14 +81,10 @@ export default function FaqSection() {
   };
 
   return (
-    <section className="w-full max-w-4xl flex flex-col items-center mt-12 mb-32 px-4 font-orbitron">
-      {/* FAQ Header */}
-      <h2 className="text-2xl md:text-3xl font-black text-black tracking-widest mb-16 text-center uppercase">
-        FAQ
-      </h2>
+    <section className="w-full max-w-2xl mx-auto px-4 pb-24">
+      <h2 className="font-orbitron font-bold text-3xl text-center mb-8">FAQ</h2>
 
-      {/* FAQ List */}
-      <div className="w-full flex flex-col gap-2">
+      <div className="w-full">
         {faqs.map((faq, index) => (
           <FaqItem
             key={index}
